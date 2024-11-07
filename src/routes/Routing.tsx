@@ -11,7 +11,7 @@ import NameForm from '@/components/Steps/NameForm';
 const Routing = () => {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      <Route path="*" element={<Landing />} />
       <Route path="/home" element={<Templates />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
