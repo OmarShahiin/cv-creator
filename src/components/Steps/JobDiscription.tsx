@@ -1,7 +1,9 @@
 import React from 'react';
 import { Typography, TextField, Button, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const JobDescriptionForm: React.FC = () => {
+  const navigation = useNavigate();
   return (
     <Container
       maxWidth="sm"
@@ -67,6 +69,12 @@ const JobDescriptionForm: React.FC = () => {
           },
         }}
         fullWidth
+        onClick={
+          ()=>
+          {
+            navigation('name');
+          }
+        }
       >
         Next - Add your name
       </Button>

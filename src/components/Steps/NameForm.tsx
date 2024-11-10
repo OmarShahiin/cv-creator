@@ -1,9 +1,11 @@
 import React from 'react';
 import { Typography, TextField, Button, Container, useTheme, useMediaQuery } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const NameForm: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigation = useNavigate();
   return (
     <Container
       maxWidth="sm"
@@ -62,6 +64,9 @@ const NameForm: React.FC = () => {
           },
         }}
         fullWidth
+        onClick={() => {
+          navigation('/create/Loading');
+        }}
       >
         Create Your Resume
       </Button>

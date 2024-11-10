@@ -7,6 +7,8 @@ import Templates from '@/pages/Home/Home';
 import CreateLayout from '@/pages/Steps/CreateLayout';
 import JobDescriptionForm from '@/components/Steps/JobDiscription';
 import NameForm from '@/components/Steps/NameForm';
+import Loading from '@/pages/Steps/Loading';
+import FinalStep from '@/pages/Steps/FinalStep';
 
 const Routing = () => {
   return (
@@ -18,8 +20,9 @@ const Routing = () => {
       <Route path="/OTP" element={<OTP />} />
       <Route path="/create" element={<CreateLayout />}>
         <Route index element={<JobDescriptionForm />} />
+        <Route path="Loading" element={<Loading />} />
         <Route path="Name" element={<NameForm />} />
-        {/* <Route path="final-step" element={<FinalStep />} /> */}
+        <Route path="final-step" element={<FinalStep />} />
       </Route>
     </Routes>
   );
