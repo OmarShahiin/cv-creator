@@ -1,9 +1,8 @@
 import React from 'react';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-mui';
-import { Button, Typography, Avatar, IconButton, Box, InputLabel } from '@mui/material';
+import { Typography, Avatar, Box, InputLabel } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { PhotoCamera } from '@mui/icons-material';
 
 const PersonalDetailsForm: React.FC = () => {
   return (
@@ -34,7 +33,7 @@ const PersonalDetailsForm: React.FC = () => {
           <Form>
             <Typography
               sx={{
-                fontSize: '16px',
+                fontSize: '18px',
                 fontWeight: '600',
                 fontFamily: 'Poppins',
                 color: '#2B2A44',

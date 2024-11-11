@@ -270,6 +270,36 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
             },
           },
         },
+        MuiInputBase: {
+          styleOverrides: {
+            root: {
+              borderColor: '#EFEAEA',
+
+              '&:hover': {
+                borderColor: '#EFEAEA',
+                backgroundColor: 'unset',
+              },
+              '&.Mui-focused': {
+                borderColor: '#EFEAEA',
+                boxShadow: 'none',
+              },
+            },
+          },
+        },
+        MuiOutlinedInput: {
+          styleOverrides: {
+            root: {
+              borderColor: '#EFEAEA',
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#EFEAEA',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#EFEAEA',
+                boxShadow: 'none',
+              },
+            },
+          },
+        },
       },
     }),
   );
