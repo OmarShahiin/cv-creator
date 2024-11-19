@@ -16,8 +16,8 @@ import * as Yup from 'yup';
 interface EmploymentEntry {
   id: number;
   companyName: string;
-  jobTitle: string;
-  employer: string;
+  School: string;
+  Degree: string;
   startDate: string;
   endDate: string;
   city: string;
@@ -27,8 +27,8 @@ interface EmploymentEntry {
 const EmploymentSchema = Yup.object().shape({
   employmentEntries: Yup.array().of(
     Yup.object().shape({
-      jobTitle: Yup.string().required('Job title is required'),
-      employer: Yup.string().required('Employer is required'),
+      School: Yup.string().required('School title is required'),
+      Degree: Yup.string().required('Degree is required'),
       startDate: Yup.string().required('Start date is required'),
       endDate: Yup.string().required('End date is required'),
       city: Yup.string().required('City is required'),
@@ -37,15 +37,15 @@ const EmploymentSchema = Yup.object().shape({
   ),
 });
 
-const EmploymentHistory: React.FC = () => {
+const Education: React.FC = () => {
   const [expanded, setExpanded] = useState<number | false>(false);
   const initialValues: { employmentEntries: EmploymentEntry[] } = {
     employmentEntries: [
       {
         id: 2,
-        companyName: 'companyName', // default value
-        jobTitle: '',
-        employer: 'companyName', // default to same as companyName
+        companyName: 'School Name', // default value
+        School: 'School Name',
+        Degree: '', // default to same as companyName
         startDate: '',
         endDate: '',
         city: '',
@@ -75,9 +75,7 @@ const EmploymentHistory: React.FC = () => {
               borderRadius: '16px',
             }}
           >
-            <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }}>
-              Employment History
-            </Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }}>Education</Typography>
             <FieldArray name="employmentEntries">
               {({ push }) => (
                 <>
@@ -110,7 +108,7 @@ const EmploymentHistory: React.FC = () => {
                             // marginBottom: '16px',
                           }}
                         >
-                          {entry.companyName}
+                          {entry.School}
                         </Typography>
                         {/* Show company name as accordion title */}
                       </AccordionSummary>
@@ -129,33 +127,33 @@ const EmploymentHistory: React.FC = () => {
                         <Box display="flex" flexDirection="column" gap={2}>
                           <Box display="flex" gap={2}>
                             <Box flex={1}>
-                              <Typography variant="caption">Job Title</Typography>
+                              <Typography variant="caption">School</Typography>
                               <Field
                                 size={'small'}
-                                name={`employmentEntries[${index}].jobTitle`}
+                                name={`employmentEntries[${index}].School`}
                                 as={TextField}
-                                placeholder="Job title"
+                                placeholder="School"
                                 variant="outlined"
                                 fullWidth
+                                onChange={(e: any) => {
+                                  // Update employer and companyName in real-time
+                                  const school = e.target.value;
+                                  setFieldValue(`employmentEntries[${index}].School`, school);
+                                  setFieldValue(`employmentEntries[${index}].companyName`, school); // sync companyName with employer
+                                }}
                                 sx={{ borderRadius: '8px' }}
                               />
                             </Box>
                             <Box flex={1}>
-                              <Typography variant="caption">Employer</Typography>
+                              <Typography variant="caption">Degree</Typography>
                               <Field
                                 size={'small'}
-                                name={`employmentEntries[${index}].employer`}
+                                name={`employmentEntries[${index}].Degree`}
                                 as={TextField}
-                                placeholder="Employer"
+                                placeholder="Degree"
                                 variant="outlined"
                                 fullWidth
                                 sx={{ borderRadius: '8px' }}
-                                onChange={(e: any) => {
-                                  // Update employer and companyName in real-time
-                                  const employerValue = e.target.value;
-                                  setFieldValue(`employmentEntries[${index}].employer`, employerValue);
-                                  setFieldValue(`employmentEntries[${index}].companyName`, employerValue); // sync companyName with employer
-                                }}
                               />
                             </Box>
                           </Box>
@@ -245,4 +243,4 @@ const EmploymentHistory: React.FC = () => {
   );
 };
 
-export default EmploymentHistory;
+export default Education;

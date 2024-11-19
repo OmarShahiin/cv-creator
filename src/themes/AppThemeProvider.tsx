@@ -141,7 +141,7 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
         grey: {
           50: 'hsl(0, 5%, 95%)',
           100: 'hsl(0, 0%, 90%)',
-          200: 'hsl(0, 0%, 80%)',
+          200: '#F5F6F8',
           300: 'hsl(0, 0%, 70%)',
           400: 'hsl(0, 0%, 60%)',
           500: 'hsl(0, 0%, 50%)',
@@ -150,6 +150,7 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
           800: 'hsl(0, 0%, 20%)',
           900: 'hsl(0, 0%, 10%)',
         },
+
         gradient: {
           bronze: 'linear-gradient(180deg, #9C6D3E 0%, #E8C8A9 100%)',
           silver: 'linear-gradient(180deg, #808080 0%, #DFDFDF 100%)',

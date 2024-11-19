@@ -52,13 +52,13 @@ export const OTP = () => {
       <Box
         sx={{
           flex: 1,
-          paddingBlock: '60px',
+          paddingBlock: isMobilexs?"20px":'60px',
           // paddingInlineStart: isMobile ? 'unset' : '90px',
           marginInlineStart: isMobilexs ? '0px' : isMobile ? '30px' : '90px',
           paddingInline: isMobilexs ? '5px' : 'unset',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: isMobilexs?"flex-start":'center',
           // alignItems: isMobile ? 'center' : 'start',
         }}
       >
@@ -71,7 +71,7 @@ export const OTP = () => {
             maxWidth: '369px',
           }}
         >
-          <Box width={369} height={42}>
+          <Box maxWidth={369} width={"100%"} height={42}>
             <Typography
               variant="body2"
               component="p"
@@ -93,10 +93,11 @@ export const OTP = () => {
             justifyContent="center"
             width="100%"
             maxWidth={360}
+            
             // p={2}
-            mx="auto"
+            // mx="auto"
           >
-            <Box display="flex" justifyContent="space-between" marginBlock={2} width="100%">
+            <Box display="flex" justifyContent="space-between"  columnGap={2} marginBlock={2} width="100%">
               {otp.map((digit, index) => (
                 <TextField
                   key={index}
@@ -111,11 +112,11 @@ export const OTP = () => {
                     },
                   }}
                   sx={{
-                    width: '60px',
+                    // width: '60px',
                     height: '47px',
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
-                      paddingInline: '12px',
+                      paddingInline: isMobilexs?"8px":'12px',
                     },
                   }}
                 />

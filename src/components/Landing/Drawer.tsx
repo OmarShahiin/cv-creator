@@ -3,18 +3,21 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import TranslateIcon from '@mui/icons-material/Translate';
 
 import Menu from '@mui/icons-material/Menu';
 import Close from '@mui/icons-material/Close';
-import { IconButton, Stack, Typography } from '@mui/material';
+import { IconButton, ListItemText, Stack, Typography } from '@mui/material';
 import AppLogo from '@/assets/appLogo.svg';
 import { LinkedIn, X } from '@mui/icons-material';
 export default function TemporaryDrawer({
   open,
   toggleDrawer,
+  onChangeLanguage
 }: {
   open: boolean;
   toggleDrawer: (newOpen: boolean) => () => void;
+  onChangeLanguage:  () => void;
 }) {
   const DrawerList = (
     <Box
@@ -65,7 +68,12 @@ export default function TemporaryDrawer({
                 </Typography>
               </ListItemButton>
             </ListItem>
+
           ))}
+            <ListItemButton  onClick={onChangeLanguage}>
+          <TranslateIcon sx={{ marginRight: 1 }} />
+          <ListItemText primary="Change Language" />
+        </ListItemButton>
         </List>
       </Box>
       <Box

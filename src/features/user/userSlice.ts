@@ -8,6 +8,7 @@ const initialState = {
     : window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light',
+  language: localStorage.getItem('language') || 'en', // Default to 'en' if no language is set
 };
 
 export const userSlice = createSlice({
@@ -30,9 +31,13 @@ export const userSlice = createSlice({
         localStorage.setItem('mode', 'light');
       }
     },
+    setLanguage: (state, action) => {
+      state.language = action.payload;
+      localStorage.setItem('language', action.payload);
+    },
   },
 });
 
-export const { setCredentials, setToken, changeMode } = userSlice.actions;
+export const { setCredentials, setToken, changeMode, setLanguage } = userSlice.actions;
 
 export default userSlice.reducer;

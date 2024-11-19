@@ -42,7 +42,7 @@ const JobDescriptionForm: React.FC = () => {
         align="center"
         gutterBottom
       >
-        Write your job discretion
+        Write your job discription
       </Typography>
       <TextField
         variant="outlined"

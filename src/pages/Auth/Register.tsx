@@ -46,13 +46,13 @@ export const Rigister = () => {
       <Box
         sx={{
           flex: 1,
-          paddingBlock: '60px',
+          paddingBlock: isMobilexs?"20px":'60px',
           // paddingInlineStart: isMobile ? 'unset' : '90px',
           marginInlineStart: isMobilexs ? '0px' : isMobile ? '30px' : '90px',
           paddingInline: isMobilexs ? '5px' : 'unset',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          // justifyContent: isMobilexs?"flex-start":'center',
           // alignItems: isMobile ? 'center' : 'start',
         }}
       >
@@ -133,7 +133,7 @@ export const Rigister = () => {
             // p={2}
             mx="auto"
           >
-            <FormLabel sx={{ color: '#838291', textAlign: 'start' }}>Email</FormLabel>
+            <FormLabel sx={{ color: '#000', textAlign: 'start' }}>Email</FormLabel>
             <TextField variant="outlined" fullWidth margin="normal" placeholder="Email" />
             <FormControlLabel
               control={<Checkbox checked={checked} onChange={handleCheckboxChange} color="primary" />}
@@ -180,9 +180,11 @@ export const Rigister = () => {
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center',
+            // justifyContent: 'center',
             alignItems: 'center',
             paddingInline: '40px',
+            paddingBlock: isMobilexs?"20px":'60px',
+
           }}
         >
           <Box component={'img'} src={side} />

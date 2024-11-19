@@ -145,9 +145,9 @@ const TitleSection = () => {
               position: 'absolute',
               top: '491px',
               left: isMobile ? '250px' : '982px',
-              borderRadius: '16px',
               width: isMobile ? '260px' : '378px',
               height: isMobile ? '362px' : '527px',
+              borderRadius: '16px',
               objectFit: 'cover',
             }}
           />

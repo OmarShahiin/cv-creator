@@ -127,11 +127,12 @@ const templates = [
 ];
 function Templates() {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [selectedTemplate, setSelectedTemplate] = useState(1);
   const navigation = useNavigate();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobilexs = useMediaQuery(theme.breakpoints.down(376));
   const handleTabChange = (_: any, newValue: any) => {
     setSelectedTab(newValue);
   };
@@ -189,7 +190,7 @@ function Templates() {
           <Typography
             sx={{
               fontFamily: 'Poppins',
-              fontSize: isMobile ? '24px' : '34px',
+              fontSize: isMobilexs ? '20px' : isMobile ? '24px' : '34px',
               fontWeight: '700',
               width: isMobile ? '364px' : '680px',
               alignSelf: 'center',

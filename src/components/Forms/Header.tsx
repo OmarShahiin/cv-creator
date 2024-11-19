@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, LinearProgress, Typography, Chip } from '@mui/material';
+import { Box, Button, LinearProgress, Typography, Chip, useTheme, useMediaQuery } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 interface ResumeHeaderProps {
@@ -9,18 +9,23 @@ interface ResumeHeaderProps {
 }
 
 const ResumeHeader: React.FC<ResumeHeaderProps> = ({ name, score, improvement }) => {
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Box
       display="flex"
       //   alignItems="center"
       justifyContent="space-between"
-      p={2}
+      p={isMobile ? 1 : 2}
       borderRadius={2}
       borderColor="divider"
       flexDirection={'column'}
       sx={{
         width: '100%',
         backgroundColor: '#fff',
+        marginTop: isMobile ? '-96px' : '0px',
       }}
     >
       {/* Left side: Name and progress */}
@@ -74,17 +79,19 @@ const ResumeHeader: React.FC<ResumeHeaderProps> = ({ name, score, improvement })
           />
         </Box>
 
-        <Button
-          variant="contained"
-          color="primary"
-          endIcon={<ArrowDropDownIcon />}
-          sx={{
-            borderRadius: '8px',
-            paddingBlock: '7px',
-          }}
-        >
-          + Add section
-        </Button>
+        {!isMobile && (
+          <Button
+            variant="contained"
+            color="primary"
+            endIcon={<ArrowDropDownIcon />}
+            sx={{
+              borderRadius: '8px',
+              paddingBlock: '7px',
+            }}
+          >
+            + Add section
+          </Button>
+        )}
       </Box>
 
       {/* Right side: Button */}

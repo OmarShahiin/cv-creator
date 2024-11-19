@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, useTheme, useMediaQuery } from '@mui/material';
 import bag from '@/assets/briefcaseG.svg';
 import clipboard from '@/assets/clipboard.svg';
 import note from '@/assets/note-2.svg';
@@ -11,11 +11,19 @@ interface StepProgressProps {
 }
 
 export const StepProgress: React.FC<StepProgressProps> = ({ step, totalSteps, title }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const progressValue = (step / totalSteps) * 100;
   const navigete = useNavigate();
   useEffect(() => {
-    navigete('/create/final-step');
-    setTimeout(() => {}, 5000);
+    setTimeout(
+      () => {
+        navigete('/create/final-step');
+      },
+
+      100000,
+    );
     return () => {};
   }, []);
 
@@ -28,7 +36,7 @@ export const StepProgress: React.FC<StepProgressProps> = ({ step, totalSteps, ti
       sx={{
         backgroundColor: '#fff',
         borderRadius: '14px',
-        minWidth: '580px',
+        minWidth: isMobile ? '98%' : '580px',
         paddingTop: '115px',
         paddingBottom: '96px',
       }}

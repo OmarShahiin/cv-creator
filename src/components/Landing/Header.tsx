@@ -3,6 +3,10 @@ import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material'
 import AppLogo from '@/assets/appLogo.svg';
 import TemporaryDrawer from './Drawer';
 import { useNavigate } from 'react-router-dom';
+import TranslateIcon from '@mui/icons-material/Translate';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { setLanguage } from '@/features/user/userSlice';
+import i18n from '@/i18n';
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
@@ -10,6 +14,14 @@ const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigation = useNavigate();
+  const dispatch = useAppDispatch();
+  const language = useAppSelector((state) => state.user.language);
+  const handleChangeLanguage = () => {
+    const newLanguage = language === 'en' ? 'ar' : 'en';
+    dispatch(setLanguage(newLanguage));
+    i18n.changeLanguage(newLanguage); 
+   };
+
   return (
     <Box
       sx={{
@@ -77,6 +89,14 @@ const Header = () => {
 
       {/* Get Started Button */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      {!isMobile && <Button 
+              startIcon={<TranslateIcon  />} 
+              onClick={handleChangeLanguage} 
+              sx={{ display: {  md: 'inline-flex' } }}
+            >
+
+              {language === 'en' ? 'ar' : 'en'}
+            </Button>}
         <Button
           variant="contained"
           sx={{
@@ -93,7 +113,7 @@ const Header = () => {
         >
           Get Started
         </Button>
-        {isMobile && <TemporaryDrawer open={open} toggleDrawer={toggleDrawer} />}
+        {isMobile && <TemporaryDrawer open={open} toggleDrawer={toggleDrawer} onChangeLanguage={handleChangeLanguage} />}
       </Box>
     </Box>
   );
