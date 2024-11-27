@@ -12,53 +12,77 @@ import {
   useTheme,
 } from '@mui/material';
 import side from '@/assets/sideSvg.svg';
-import Applogo from '@/assets/appLogo.svg';
+import enApplogo from '@/assets/appLogo.svg';
+import arApplogo from '@/assets/appLogoAr.svg';
 import google from '@/assets/Google.svg';
 import linkedin from '@/assets/linkedin.svg';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSendOtpMutation } from '@/features/user/authApiSlice';
+import i18n from '@/i18n';
+import { useTranslation } from 'react-i18next';
+
 export const Rigister = () => {
+  const { t } = useTranslation(); // Add translation hook
+  const [email, setEmail] = useState('');
   const [checked, setChecked] = useState(false);
 
   const handleCheckboxChange = (event: any) => {
     setChecked(event.target.checked);
   };
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
   const isMobilexs = useMediaQuery(theme.breakpoints.down(376));
 
   const navigation = useNavigate();
 
+  // Use the mutation hook
+  const [sendOtp, { isLoading }] = useSendOtpMutation();
+
+  const handleSendOtp = async () => {
+    if (!email) {
+      alert(t('errors.enterEmail')); // Translate alert
+      return;
+    }
+    if (!checked) {
+      alert(t('errors.agreeTerms')); // Translate alert
+      return;
+    }
+
+    try {
+      await sendOtp({ email }).unwrap();
+      navigation('/OTP', { state: { email } }); // Pass email to the OTP screen
+    } catch (error) {
+      console.error('Failed to send OTP:', error);
+      alert(t('errors.sendingOtp')); // Translate alert
+    }
+  };
+
   return (
     <Box
       sx={{
         backgroundColor: '#FFF',
-        // borderRadius: 3,
         overflowX: 'hidden',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: isMobile ? 'flex-start' : 'space-between',
-        // paddingInlineStart: isMobile ? '30px' : 'unset',
-
         height: '100vh',
       }}
     >
       <Box
         sx={{
           flex: 1,
-          paddingBlock: isMobilexs?"20px":'60px',
-          // paddingInlineStart: isMobile ? 'unset' : '90px',
+          paddingBlock: isMobilexs ? '20px' : '60px',
           marginInlineStart: isMobilexs ? '0px' : isMobile ? '30px' : '90px',
           paddingInline: isMobilexs ? '5px' : 'unset',
           display: 'flex',
           flexDirection: 'column',
-          // justifyContent: isMobilexs?"flex-start":'center',
-          // alignItems: isMobile ? 'center' : 'start',
         }}
       >
-        <Box component={'img'} src={Applogo} mb={'34px'} width={'81px'} />
+        <Box component={'img'} src={i18n.dir() === 'ltr' ? enApplogo : arApplogo} mb={'34px'} width={'81px'} />
         <Typography variant="h1" sx={{ fontSize: '24px', fontWeight: '700px' }}>
-          Login/Signup
+          {t('register.title')}
         </Typography>
         <Box
           sx={{
@@ -73,12 +97,11 @@ export const Rigister = () => {
               justifyContent: 'center',
               columnGap: '8px',
               paddingBlock: '14px',
-              minWidth: !isMobile ? '369px' : 'unset',
               width: '100%',
               maxWidth: '369px',
               marginTop: '26px',
               borderRadius: '8px',
-              border: ' 1px solid var(--Border, #EFEAEA)',
+              border: '1px solid var(--Border, #EFEAEA)',
             }}
           >
             <Box component={'img'} src={google} />
@@ -91,7 +114,7 @@ export const Rigister = () => {
                 textTransform: 'none',
               }}
             >
-              Continue with Google account
+              {t('register.googleButton')}
             </Typography>
           </Button>
           <Button
@@ -106,7 +129,7 @@ export const Rigister = () => {
               maxWidth: '369px',
               marginTop: '10px',
               borderRadius: '8px',
-              border: ' 1px solid var(--Border, #EFEAEA)',
+              border: '1px solid var(--Border, #EFEAEA)',
             }}
           >
             <Box component={'img'} src={linkedin} />
@@ -119,33 +142,31 @@ export const Rigister = () => {
                 textTransform: 'none',
               }}
             >
-              Continue with Linkedin
+              {t('register.linkedinButton')}
             </Typography>
           </Button>
-          <Divider sx={{ color: '#838291', marginBlockStart: '26px' }}>or</Divider>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="start"
-            justifyContent="center"
-            width="100%"
-            // maxWidth={360}
-            // p={2}
-            mx="auto"
-          >
-            <FormLabel sx={{ color: '#000', textAlign: 'start' }}>Email</FormLabel>
-            <TextField variant="outlined" fullWidth margin="normal" placeholder="Email" />
+          <Divider sx={{ color: '#838291', marginBlockStart: '26px' }}>{t('register.or')}</Divider>
+          <Box display="flex" flexDirection="column" alignItems="start" justifyContent="center" width="100%" mx="auto">
+            <FormLabel sx={{ color: '#000', textAlign: 'start' }}>{t('register.emailLabel')}</FormLabel>
+            <TextField
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              placeholder={t('register.emailPlaceholder')}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
             <FormControlLabel
               control={<Checkbox checked={checked} onChange={handleCheckboxChange} color="primary" />}
               label={
                 <Typography variant="body2" sx={{ cursor: 'text' }}>
-                  I agree to{' '}
+                  {t('register.agreeTo')}{' '}
                   <Link href="#" color="primary">
-                    Terms of Service
+                    {t('register.terms')}
                   </Link>{' '}
-                  and{' '}
+                  {t('register.and')}{' '}
                   <Link href="#" color="primary">
-                    Privacy Policy
+                    {t('register.privacy')}
                   </Link>
                   *
                 </Typography>
@@ -154,6 +175,7 @@ export const Rigister = () => {
             <Button
               variant="contained"
               color="primary"
+              disableRipple
               fullWidth
               sx={{
                 mt: 2,
@@ -165,11 +187,10 @@ export const Rigister = () => {
                 fontWeight: '600',
                 textTransform: 'none',
               }}
-              onClick={() => {
-                navigation('/OTP');
-              }}
+              onClick={handleSendOtp}
+              disabled={isLoading || !checked}
             >
-              Login/Signup
+              {isLoading ? t('register.sendingOtp') : t('register.submitButton')}
             </Button>
           </Box>
         </Box>
@@ -180,11 +201,9 @@ export const Rigister = () => {
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            // justifyContent: 'center',
             alignItems: 'center',
             paddingInline: '40px',
-            paddingBlock: isMobilexs?"20px":'60px',
-
+            paddingBlock: isMobilexs ? '20px' : '60px',
           }}
         >
           <Box component={'img'} src={side} />

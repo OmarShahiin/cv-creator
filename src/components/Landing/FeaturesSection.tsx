@@ -1,18 +1,44 @@
-import { Box, Typography, Card, Grid2, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Typography, Card, useTheme, useMediaQuery } from '@mui/material';
 import person from '@/assets/person.svg';
 import heart from '@/assets/heart.svg';
 import medal from '@/assets/medal.svg';
 import getSelected from '@/assets/getSelected.svg';
+import Grid2 from '@mui/material/Grid2'; // Import Grid2 from the experimental material components
+import { useTranslation } from 'react-i18next';
+
 const FeaturesSection = () => {
+  const { t } = useTranslation(); // Use the translation hook
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const features = [
+    {
+      title: t('features.createPersonalizedCVs.title'),
+      description: t('features.createPersonalizedCVs.description'),
+      icon: person,
+    },
+    {
+      title: t('features.userFriendlyInterface.title'),
+      description: t('features.userFriendlyInterface.description'),
+      icon: heart,
+    },
+    {
+      title: t('features.standOut.title'),
+      description: t('features.standOut.description'),
+      icon: medal,
+    },
+    {
+      title: t('features.getHired.title'),
+      description: t('features.getHired.description'),
+      icon: getSelected,
+    },
+  ];
 
   return (
     <Box
       sx={{
         width: '100%',
         position: 'relative',
-        // height: 438,
         textAlign: 'center',
         fontSize: 38,
         color: '#2b2a44',
@@ -21,15 +47,10 @@ const FeaturesSection = () => {
         flexDirection: 'column',
         alignItems: 'center',
         paddingTop: '36px',
-        // paddingInline: isMobile ? '17px' : '',
       }}
     >
       <Typography
         sx={{
-          // position: 'absolute',
-          // top: 36,
-          // left: '50%',
-          // transform: 'translateX(-50%)',
           fontWeight: isMobile ? 700 : 600,
           lineHeight: '117%',
           maxWidth: '793px',
@@ -38,15 +59,11 @@ const FeaturesSection = () => {
           marginBottom: '36px',
         }}
       >
-        Features designed to help you win your dream job
+        {t('features.title')}
       </Typography>
 
       <Box
         sx={{
-          // position: 'absolute',
-          // top: 164,
-          // left: 0,
-          // right: 0,
           display: 'flex',
           justifyContent: 'center',
         }}
@@ -59,33 +76,10 @@ const FeaturesSection = () => {
           size={12}
           paddingInline={1}
         >
-          {[
-            {
-              title: 'Create Personalized CVs',
-              description: 'Effortlessly import data and customize your CV based on your career goals',
-              icon: person,
-            },
-            {
-              title: 'User-Friendly Interface',
-              description: 'Step-by-step guidance to build your CV with ease',
-              icon: heart,
-            },
-            {
-              title: 'Stand Out',
-              description: 'Generate a polished, professional CV tailored to your target opportunities',
-              icon: medal,
-            },
-            {
-              title: 'Get Hired',
-              description: 'Increase your chances of landing your dream job with a standout CV',
-              icon: getSelected,
-            },
-          ].map((item, index) => (
+          {features.map((item, index) => (
             <Grid2 key={index} size={isMobile ? 6 : 3}>
               <Card
                 sx={{
-                  // width: isMobile ? 174 : 274,
-                  // height: isMobile ? 174 : 274,
                   borderRadius: 2,
                   position: 'relative',
                   backgroundColor: '#fff',
@@ -97,8 +91,6 @@ const FeaturesSection = () => {
                   paddingInline: isMobile ? '12px' : '24px',
                   paddingBlock: isMobile ? '0px' : '24px',
                   paddingTop: isMobile ? '12px' : '24px',
-                  paddingInlineStart: isMobile ? '12px' : '24px',
-                  // gap: '12px',
                 }}
               >
                 <Box
@@ -114,10 +106,7 @@ const FeaturesSection = () => {
                   sx={{
                     fontWeight: 600,
                     lineHeight: '140%',
-                    // width: '189px',
                     fontSize: isMobile ? '14.1px' : '16px',
-
-                    // marginBottom: '40px',
                   }}
                 >
                   {item.title}

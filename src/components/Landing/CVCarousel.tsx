@@ -4,7 +4,10 @@ import ArrowBackIosNewIcon from '@/assets/prev.svg';
 import ArrowForwardIosIcon from '@/assets/next.svg';
 import CenteredSwiper from './Swiper';
 import certifaied from '@/assets/certified.svg';
+import { useTranslation } from 'react-i18next';
+
 const CVCarousel = () => {
+  const { t } = useTranslation(); // Use translation hook
   const scrollRef = useRef<any>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -13,7 +16,6 @@ const CVCarousel = () => {
     <Box
       sx={{
         textAlign: 'center',
-
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -35,6 +37,7 @@ const CVCarousel = () => {
           }}
         />
       </Box>
+      {/* Title */}
       <Typography
         gutterBottom
         sx={{
@@ -44,46 +47,40 @@ const CVCarousel = () => {
           paddingInline: '10px',
         }}
       >
-        Create Your Perfect CV with ToBe.expert
+        {t('cvCarousel.title')}
       </Typography>
+      {/* Subtitle */}
       <Typography
         variant="subtitle1"
         color="textSecondary"
         gutterBottom
         sx={{
           fontSize: isMobile ? '14px' : '18px',
-          fontWeight: isMobile ? '400' : '400',
+          fontWeight: '400',
           maxWidth: isMobile ? '346px' : 'lg',
           paddingInline: '10px',
           marginBottom: '20px',
-          // backgroundColor: 'red',
         }}
       >
-        Craft a tailored curriculum vitae that showcases your unique skills and experiences.
+        {t('cvCarousel.subtitle')}
       </Typography>
 
       <Box
         sx={{
           display: 'flex',
-          // alignSelf: 'center',
           flexDirection: 'row',
           width: '100%',
-          // height: '300px',
           justifyContent: 'space-between',
           maxWidth: 'lg',
-          // mb: '30px',
-          // backgroundColor: 'red',
           alignItems: 'center',
           marginBottom: '34px',
         }}
       >
         <IconButton
-          // disableFocusRipple
           disableRipple
           onClick={() => scrollRef.current?.slidePrev()}
           sx={{
             minWidth: 'auto',
-
             display: isMobile ? 'none' : 'block',
           }}
         >
@@ -104,7 +101,7 @@ const CVCarousel = () => {
               textTransform: 'none',
             }}
           >
-            Create Your Resume
+            {t('cvCarousel.createResumeButton')}
           </Typography>
         </Button>
         <IconButton

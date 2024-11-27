@@ -24,6 +24,11 @@ interface EmploymentEntry {
   description: string;
 }
 
+interface EmploymentHistoryProps {
+  initialData: EmploymentEntry[];
+  onUpdate: (updatedData: EmploymentEntry[]) => void;
+}
+
 const EmploymentSchema = Yup.object().shape({
   employmentEntries: Yup.array().of(
     Yup.object().shape({
@@ -33,37 +38,25 @@ const EmploymentSchema = Yup.object().shape({
       endDate: Yup.string().required('End date is required'),
       city: Yup.string().required('City is required'),
       description: Yup.string().required('Description is required'),
-    }),
+    })
   ),
 });
 
-const EmploymentHistory: React.FC = () => {
-  const [expanded, setExpanded] = useState<number | false>(false);
-  const initialValues: { employmentEntries: EmploymentEntry[] } = {
-    employmentEntries: [
-      {
-        id: 2,
-        companyName: 'companyName', // default value
-        jobTitle: '',
-        employer: 'companyName', // default to same as companyName
-        startDate: '',
-        endDate: '',
-        city: '',
-        description: '',
-      },
-    ],
-  };
+const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUpdate }) => {
+  const [expanded, setExpanded] = useState<number[]>([]); // Array to track expanded states
 
-  const handleAccordionChange = (id: number) => (_: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpanded(isExpanded ? id : false);
+  const handleAccordionChange = (id: number) => {
+    setExpanded((prev) =>
+      prev.includes(id) ? prev.filter((expandedId) => expandedId !== id) : [...prev, id]
+    );
   };
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={{ employmentEntries: initialData }}
       validationSchema={EmploymentSchema}
       onSubmit={(values) => {
-        console.log('Submitted values:', values);
+        onUpdate(values.employmentEntries);
       }}
     >
       {({ values, setFieldValue }) => (
@@ -83,15 +76,14 @@ const EmploymentHistory: React.FC = () => {
                 <>
                   {values.employmentEntries.map((entry, index) => (
                     <Accordion
-                      key={entry.id}
-                      expanded={expanded === entry.id}
-                      onChange={handleAccordionChange(entry.id)}
+                      key={index}
+                      expanded={expanded.includes(index)}
+                      onChange={() => handleAccordionChange(index)}
                       sx={{
                         border: '1px solid #ccc',
                         borderRadius: '8px !important',
                         marginBlock: '16px !important',
                         boxShadow: 'none !important',
-
                         '&.Mui-expanded': {
                           borderTopWidth: '1px !important',
                           marginBlock: '16px !important',
@@ -107,14 +99,12 @@ const EmploymentHistory: React.FC = () => {
                             fontWeight: '500',
                             fontFamily: 'Poppins',
                             color: '#2B2A44',
-                            // marginBottom: '16px',
                           }}
                         >
-                          {entry.companyName}
+                          {entry.companyName || 'New Entry'}
                         </Typography>
-                        {/* Show company name as accordion title */}
                       </AccordionSummary>
-                      {expanded && (
+                      {expanded.includes(index) && (
                         <Divider
                           variant="middle"
                           sx={{
@@ -131,7 +121,7 @@ const EmploymentHistory: React.FC = () => {
                             <Box flex={1}>
                               <Typography variant="caption">Job Title</Typography>
                               <Field
-                                size={'small'}
+                                size="small"
                                 name={`employmentEntries[${index}].jobTitle`}
                                 as={TextField}
                                 placeholder="Job title"
@@ -143,7 +133,7 @@ const EmploymentHistory: React.FC = () => {
                             <Box flex={1}>
                               <Typography variant="caption">Employer</Typography>
                               <Field
-                                size={'small'}
+                                size="small"
                                 name={`employmentEntries[${index}].employer`}
                                 as={TextField}
                                 placeholder="Employer"
@@ -151,49 +141,33 @@ const EmploymentHistory: React.FC = () => {
                                 fullWidth
                                 sx={{ borderRadius: '8px' }}
                                 onChange={(e: any) => {
-                                  // Update employer and companyName in real-time
                                   const employerValue = e.target.value;
                                   setFieldValue(`employmentEntries[${index}].employer`, employerValue);
-                                  setFieldValue(`employmentEntries[${index}].companyName`, employerValue); // sync companyName with employer
+                                  setFieldValue(`employmentEntries[${index}].companyName`, employerValue); // Sync companyName
                                 }}
                               />
                             </Box>
                           </Box>
                           <Box display="flex" gap={2}>
-                            <Box flex={1} display="flex" gap={2}>
-                              <Box>
-                                <Typography variant="caption">Start Date</Typography>
-                                <Field
-                                  size={'small'}
-                                  name={`employmentEntries[${index}].startDate`}
-                                  as={TextField}
-                                  placeholder="MM/YY"
-                                  variant="outlined"
-                                  fullWidth
-                                  sx={{ borderRadius: '8px' }}
-                                />
-                              </Box>
-                              <Box>
-                                <Typography variant="caption">End Date</Typography>
-                                <Field
-                                  size={'small'}
-                                  name={`employmentEntries[${index}].endDate`}
-                                  as={TextField}
-                                  placeholder="MM/YY"
-                                  variant="outlined"
-                                  fullWidth
-                                  sx={{ borderRadius: '8px' }}
-                                />
-                              </Box>
-                            </Box>
-
                             <Box flex={1}>
-                              <Typography variant="caption">City</Typography>
+                              <Typography variant="caption">Start Date</Typography>
                               <Field
-                                size={'small'}
-                                name={`employmentEntries[${index}].city`}
+                                size="small"
+                                name={`employmentEntries[${index}].startDate`}
                                 as={TextField}
-                                placeholder="City"
+                                placeholder="MM/YY"
+                                variant="outlined"
+                                fullWidth
+                                sx={{ borderRadius: '8px' }}
+                              />
+                            </Box>
+                            <Box flex={1}>
+                              <Typography variant="caption">End Date</Typography>
+                              <Field
+                                size="small"
+                                name={`employmentEntries[${index}].endDate`}
+                                as={TextField}
+                                placeholder="MM/YY"
                                 variant="outlined"
                                 fullWidth
                                 sx={{ borderRadius: '8px' }}
@@ -201,9 +175,21 @@ const EmploymentHistory: React.FC = () => {
                             </Box>
                           </Box>
                           <Box>
+                            <Typography variant="caption">City</Typography>
+                            <Field
+                              size="small"
+                              name={`employmentEntries[${index}].city`}
+                              as={TextField}
+                              placeholder="City"
+                              variant="outlined"
+                              fullWidth
+                              sx={{ borderRadius: '8px' }}
+                            />
+                          </Box>
+                          <Box>
                             <Typography variant="caption">Description</Typography>
                             <Field
-                              size={'small'}
+                              size="small"
                               name={`employmentEntries[${index}].description`}
                               as={TextField}
                               placeholder="Description"
@@ -222,9 +208,9 @@ const EmploymentHistory: React.FC = () => {
                     onClick={() =>
                       push({
                         id: values.employmentEntries.length + 1,
-                        companyName: `Company ${values.employmentEntries.length + 1}`,
-                        employer: `Company ${values.employmentEntries.length + 1}`, // default employer
+                        companyName: '',
                         jobTitle: '',
+                        employer: '',
                         startDate: '',
                         endDate: '',
                         city: '',
@@ -232,12 +218,21 @@ const EmploymentHistory: React.FC = () => {
                       })
                     }
                     color="primary"
+                    sx={{ marginTop: '16px' }}
                   >
                     + Add More
                   </Button>
                 </>
               )}
             </FieldArray>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ marginTop: '16px', textTransform: 'none' }}
+            >
+              Save Changes
+            </Button>
           </Box>
         </Form>
       )}

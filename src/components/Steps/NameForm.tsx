@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Typography, TextField, Button, Container, useTheme, useMediaQuery } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const NameForm: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigation = useNavigate();
+  const [name, setName] = useState<string>('');
+  const location = useLocation();
+  const { state } = location;
+  const { templateId, jobDescription } = state || {};
+
   return (
     <Container
       maxWidth="sm"
@@ -46,7 +51,14 @@ const NameForm: React.FC = () => {
       >
         Write your Name{' '}
       </Typography>
-      <TextField variant="outlined" placeholder="Write here" fullWidth style={{ marginBottom: '1.5rem' }} />
+      <TextField
+        variant="outlined"
+        onChange={(e) => setName(e.target.value)}
+        value={name}
+        placeholder="Write here"
+        fullWidth
+        style={{ marginBottom: '1.5rem' }}
+      />
       <Button
         variant="contained"
         disableRipple
@@ -65,7 +77,7 @@ const NameForm: React.FC = () => {
         }}
         fullWidth
         onClick={() => {
-          navigation('/create/Loading');
+          navigation('/create/Loading', { state: { templateId, jobDescription, name } });
         }}
       >
         Create Your Resume

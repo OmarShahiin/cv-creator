@@ -2,28 +2,28 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, useThem
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const faqs = [
-  {
-    question: 'How does SmartCV Builder work?',
-    answer:
-      '        Find answers to common questions about the CV building process and features of SmartCV Builder.    ',
-  },
-  { question: 'Is my data secure?', answer: 'Yes, your data is securely stored and protected.' },
-  { question: 'Can I customize my CV?', answer: 'Yes, you can customize various aspects of your CV.' },
-  { question: 'How can I sign up?', answer: 'You can sign up on our website.' },
-  { question: 'Is there a cost?', answer: 'Our service is free with premium options available.' },
-];
 const FaqSection = () => {
+  const { t } = useTranslation(); // Use translation hook
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [icons, setIcons] = useState<any>([]);
-  const handleExpanded = (bool: Boolean, index: number) => {
+  const handleExpanded = (bool: boolean, index: number) => {
     const temp: any = [...icons];
     temp[index] = bool ? <RemoveOutlinedIcon /> : <AddOutlinedIcon />;
     setIcons(temp);
   };
+
+  // Translated FAQs
+  const faqs = [
+    { question: t('faq.question1.title'), answer: t('faq.question1.answer') },
+    { question: t('faq.question2.title'), answer: t('faq.question2.answer') },
+    { question: t('faq.question3.title'), answer: t('faq.question3.answer') },
+    { question: t('faq.question4.title'), answer: t('faq.question4.answer') },
+    { question: t('faq.question5.title'), answer: t('faq.question5.answer') },
+  ];
 
   return (
     <Box
@@ -32,11 +32,10 @@ const FaqSection = () => {
         flexDirection: 'column',
         alignItems: 'center',
         width: isMobile ? '95%' : '100%',
-        // background: '#fff',
         maxWidth: 'lg',
-        // padding: 0,
       }}
     >
+      {/* Title */}
       <Typography
         sx={{
           marginTop: '42px',
@@ -44,8 +43,10 @@ const FaqSection = () => {
           fontWeight: '600',
         }}
       >
-        FAQs
+        {t('faq.title')}
       </Typography>
+
+      {/* Subtitle */}
       <Typography
         sx={{
           marginTop: '12px',
@@ -56,11 +57,12 @@ const FaqSection = () => {
           textAlign: isMobile ? 'center' : 'start',
         }}
       >
-        Find answers to common questions about the CV building process and features of SmartCV Builder.
+        {t('faq.subtitle')}
       </Typography>
+
+      {/* FAQs */}
       <Box
         sx={{
-          // paddingBlock: '20px',
           paddingInline: isMobile ? '5px' : '30px',
           backgroundColor: '#FFF',
           borderRadius: '16px',
@@ -70,12 +72,7 @@ const FaqSection = () => {
       >
         {faqs.map((faq, index) => (
           <Accordion
-            slotProps={{
-              heading: {},
-            }}
-            onChange={(_, b) => {
-              handleExpanded(b, index);
-            }}
+            onChange={(_, expanded) => handleExpanded(expanded, index)}
             sx={{
               backgroundColor: '#FFF',
               '&.Mui-expanded': {

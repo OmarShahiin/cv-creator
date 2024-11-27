@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 import React from 'react';
@@ -159,7 +160,7 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
       },
 
       typography: {
-        fontFamily: 'Dosis, sans-serif',
+        fontFamily: i18n.dir()== 'ltr' ? 'Dosis, sans-serif':'IBM Plex Sans Arabic',
 
         h1: {
           fontSize: '26px',

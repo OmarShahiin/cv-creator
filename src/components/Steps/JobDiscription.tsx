@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Typography, TextField, Button, Container } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const JobDescriptionForm: React.FC = () => {
   const navigation = useNavigate();
+  const location = useLocation();
+  const { state } = location;
+  const [discription, setDiscription] = useState<string>('');
   return (
     <Container
       maxWidth="sm"
@@ -48,6 +51,8 @@ const JobDescriptionForm: React.FC = () => {
         variant="outlined"
         placeholder="Write here"
         multiline
+        value={discription}
+        onChange={(e) => setDiscription(e.target.value)}
         rows={10}
         fullWidth
         style={{ marginBottom: '1.5rem' }}
@@ -69,12 +74,14 @@ const JobDescriptionForm: React.FC = () => {
           },
         }}
         fullWidth
-        onClick={
-          ()=>
-          {
-            navigation('name');
-          }
-        }
+        onClick={() => {
+          navigation('name', {
+            state: {
+              ...state,
+              jobDescription: discription,
+            },
+          });
+        }}
       >
         Next - Add your name
       </Button>

@@ -1,24 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Chip, Typography } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import More from '@/assets/more.svg';
+
 type Skill = {
   id: number;
   label: string;
 };
 
-const skillsData: Skill[] = [
-  { id: 1, label: 'Multitasking Skills' },
-  { id: 2, label: 'Leadership Skills' },
-  { id: 3, label: 'Creative Problem Solving Skills' },
-  { id: 4, label: 'Customer Service Skills' },
-  { id: 5, label: 'Strong Analytical Skills' },
-  { id: 6, label: 'Design' },
-];
+interface MultiSelectTagsProps {
+  initialSelectedSkills?: number[]; // Pre-selected skill IDs
+  skillsData: Skill[]; // Available skills
+  onUpdate?: (selectedSkills: number[]) => void; // Callback for updates
+}
 
-const MultiSelectTags: React.FC = () => {
-  // State to manage selected skills
-  const [selectedSkills, setSelectedSkills] = useState<number[]>([]);
+const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
+  initialSelectedSkills = [],
+  skillsData,
+  onUpdate,
+}) => {
+  const [selectedSkills, setSelectedSkills] = useState<number[]>(initialSelectedSkills);
+
+  // Notify parent of changes
+  useEffect(() => {
+    if (onUpdate) {
+      onUpdate(selectedSkills);
+    }
+  }, [selectedSkills, onUpdate]);
 
   // Handler for toggling selection
   const toggleSkill = (id: number): void => {

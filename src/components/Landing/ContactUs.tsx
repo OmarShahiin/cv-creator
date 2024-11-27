@@ -1,6 +1,8 @@
 import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const ContactUs = () => {
+  const { t } = useTranslation(); // Use translation hook
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -43,7 +45,6 @@ const ContactUs = () => {
             flexDirection: 'column',
             alignItems: 'flex-start',
             justifyContent: 'center',
-            // rowGap: '5px',
           }}
         >
           <Typography
@@ -54,7 +55,7 @@ const ContactUs = () => {
               fontFamily: 'Roboto, sans-serif',
             }}
           >
-            Still have questions?
+            {t('contactUs.title')}
           </Typography>
           <Typography
             sx={{
@@ -64,7 +65,7 @@ const ContactUs = () => {
               fontFamily: 'Roboto, sans-serif',
             }}
           >
-            Contact our support team for further assistance.
+            {t('contactUs.subtitle')}
           </Typography>
         </Box>
         <Button
@@ -82,7 +83,7 @@ const ContactUs = () => {
             },
           }}
         >
-          Contact us
+          {t('contactUs.button')}
         </Button>
       </Box>
     </Box>

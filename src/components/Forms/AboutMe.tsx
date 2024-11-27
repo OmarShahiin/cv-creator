@@ -1,6 +1,18 @@
-import { Box, TextField, Typography } from '@mui/material';
+import React from 'react';
+import { Box, TextField, Typography, Button } from '@mui/material';
 
-const AboutMe = () => {
+interface AboutMeProps {
+  aboutMe: string;
+  onUpdate: (updatedAboutMe: string) => void;
+}
+
+const AboutMe: React.FC<AboutMeProps> = ({ aboutMe, onUpdate }) => {
+  const [text, setText] = React.useState(aboutMe);
+
+  const handleSave = () => {
+    onUpdate(text); // Pass the updated text back to the parent
+  };
+
   return (
     <Box
       p={2}
@@ -16,7 +28,25 @@ const AboutMe = () => {
       <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }} color="#2B2A44" mb={'10px'}>
         About Me
       </Typography>
-      <TextField placeholder="Tell us about yourself" multiline rows={4} />
+      <TextField
+        placeholder="Tell us about yourself"
+        multiline
+        rows={4}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          marginTop: '12px',
+          textTransform: 'none',
+          alignSelf: 'flex-start',
+        }}
+        onClick={handleSave}
+      >
+        Save Changes
+      </Button>
     </Box>
   );
 };

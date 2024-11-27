@@ -3,7 +3,8 @@ import { Box, Typography, CircularProgress, useTheme, useMediaQuery } from '@mui
 import bag from '@/assets/briefcaseG.svg';
 import clipboard from '@/assets/clipboard.svg';
 import note from '@/assets/note-2.svg';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useGenerateCVMutation } from '@/features/cvGenerator/generateCv';
 interface StepProgressProps {
   step: number;
   totalSteps: number;
@@ -15,15 +16,33 @@ export const StepProgress: React.FC<StepProgressProps> = ({ step, totalSteps, ti
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const progressValue = (step / totalSteps) * 100;
-  const navigete = useNavigate();
-  useEffect(() => {
-    setTimeout(
-      () => {
-        navigete('/create/final-step');
-      },
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { state } = location;
+  const { templateId, jobDescription, name } = state || {};
+  const [generateCV, { isLoading }] = useGenerateCVMutation();
+  const handleGenerateCV = async () => {
+    try {
+      const body = {
+        full_name: name,
+        job_description: jobDescription,
+        template_id: templateId,
+      };
 
-      100000,
-    );
+      const res = await generateCV(body).unwrap();
+      console.log('res', res);
+      // const result = res.json();
+      navigate('/create/final-step',{ state: { response : res} });
+      // Executes the mutation and waits for the response
+    } catch (err) {
+      console.error('Error generating CV:', err);
+      // window.location.reload(); // Reload the page on failure
+    }
+  };
+  useEffect(() => {
+    if (!isLoading) {
+      handleGenerateCV();
+    }
     return () => {};
   }, []);
 

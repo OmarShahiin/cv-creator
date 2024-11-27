@@ -1,6 +1,8 @@
 import { Box, Typography, Link, Stack, useTheme, useMediaQuery } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation(); // Use translation hook
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -19,11 +21,10 @@ const Footer = () => {
         color: '#838291',
         fontFamily: 'Roboto, sans-serif',
         marginBottom: '22px',
-        // padding: '10px 0', // Add padding for better spacing
       }}
     >
       <Typography sx={{ lineHeight: '150%', fontSize: isMobile ? '12px' : '12px' }}>
-        © 2024 ToBe.expert. All rights reserved.
+        © 2024 {t('footer.brandName')}. {t('footer.allRightsReserved')}
       </Typography>
       <Stack
         direction="row"
@@ -38,7 +39,7 @@ const Footer = () => {
           color="inherit"
           sx={{ lineHeight: '150%', fontSize: isMobile ? '12px' : '12px' }}
         >
-          Privacy Policy
+          {t('footer.privacyPolicy')}
         </Link>
         <Link
           href="#"
@@ -46,7 +47,7 @@ const Footer = () => {
           color="inherit"
           sx={{ lineHeight: '150%', fontSize: isMobile ? '12px' : '12px' }}
         >
-          Terms of Service
+          {t('footer.termsOfService')}
         </Link>
         <Link
           href="#"
@@ -54,7 +55,7 @@ const Footer = () => {
           color="inherit"
           sx={{ lineHeight: '150%', fontSize: isMobile ? '12px' : '12px' }}
         >
-          Cookie Settings
+          {t('footer.cookieSettings')}
         </Link>
       </Stack>
     </Box>

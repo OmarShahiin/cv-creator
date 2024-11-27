@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
-import AppLogo from '@/assets/appLogo.svg';
+import EnAppLogo from '@/assets/appLogo.svg';
+import arAppLogo from '@/assets/appLogoAr.svg';
 import TemporaryDrawer from './Drawer';
 import { useNavigate } from 'react-router-dom';
 import TranslateIcon from '@mui/icons-material/Translate';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { setLanguage } from '@/features/user/userSlice';
 import i18n from '@/i18n';
+import { useTranslation } from 'react-i18next';
 
 const Header = () => {
+  const { t } = useTranslation(); // Add translation hook
   const [open, setOpen] = React.useState(false);
   const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
   const theme = useTheme();
@@ -16,11 +19,20 @@ const Header = () => {
   const navigation = useNavigate();
   const dispatch = useAppDispatch();
   const language = useAppSelector((state) => state.user.language);
+
   const handleChangeLanguage = () => {
     const newLanguage = language === 'en' ? 'ar' : 'en';
     dispatch(setLanguage(newLanguage));
-    i18n.changeLanguage(newLanguage); 
-   };
+    i18n.changeLanguage(newLanguage);
+
+    // Change page direction
+    document.documentElement.setAttribute('dir', newLanguage === 'en' ? 'ltr' : 'rtl');
+  };
+
+  // Ensure direction is updated on initial render
+  useEffect(() => {
+    document.documentElement.setAttribute('dir', language === 'en' ? 'ltr' : 'rtl');
+  }, [language]);
 
   return (
     <Box
@@ -31,20 +43,17 @@ const Header = () => {
         width: '100%',
         alignItems: 'center',
         justifyContent: 'space-between',
-        // color: 'red',
         fontFamily: 'Poppins',
         fontSize: 14,
         maxWidth: 'xl',
-        // padding: '0 20px', // add padding to control content spacing
-        // zIndex: 3,
         paddingInline: isMobile ? '17px' : '',
       }}
     >
       {/* Logo */}
       <Box
         component="img"
-        src={AppLogo}
-        alt=""
+        src={i18n.dir() == "ltr" ? EnAppLogo : arAppLogo}
+        alt={t('appLogoAlt')} // Add alt text for translation
         sx={{
           width: '73.7px',
           height: '32.6px',
@@ -56,13 +65,13 @@ const Header = () => {
         <Box
           sx={{
             display: 'flex',
-            flex: 1, // take available space
+            flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
             gap: '15px',
           }}
         >
-          {['CV Builder', 'Features', 'Pricing', 'About Us'].map((linkText, index) => (
+          {['cvBuilder', 'features.navtitle', 'pricing', 'aboutUs'].map((key, index) => (
             <Box
               key={index}
               sx={{
@@ -71,7 +80,9 @@ const Header = () => {
                 gap: '15px',
               }}
             >
-              <Typography sx={{ lineHeight: '150%', color: '#2B2A44', cursor: 'pointer' }}>{linkText}</Typography>
+              <Typography sx={{ lineHeight: '150%', color: '#2B2A44', cursor: 'pointer' }}>
+                {t(key)}
+              </Typography>
               {index < 3 && (
                 <Box
                   sx={{
@@ -87,16 +98,16 @@ const Header = () => {
         </Box>
       )}
 
-      {/* Get Started Button */}
+      {/* Language Switch and Get Started Button */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      {!isMobile && <Button 
-              startIcon={<TranslateIcon  />} 
-              onClick={handleChangeLanguage} 
-              sx={{ display: {  md: 'inline-flex' } }}
-            >
-
-              {language === 'en' ? 'ar' : 'en'}
-            </Button>}
+        {!isMobile && (
+          <Button
+            onClick={handleChangeLanguage}
+            sx={{ display: { md: 'inline-flex' } }}
+          >
+            {language === 'en' ? 'AR' : 'EN'}
+          </Button>
+        )}
         <Button
           variant="contained"
           sx={{
@@ -111,9 +122,11 @@ const Header = () => {
             navigation('/register');
           }}
         >
-          Get Started
+          {t('getStarted')}
         </Button>
-        {isMobile && <TemporaryDrawer open={open} toggleDrawer={toggleDrawer} onChangeLanguage={handleChangeLanguage} />}
+        {isMobile && (
+          <TemporaryDrawer open={open} toggleDrawer={toggleDrawer} onChangeLanguage={handleChangeLanguage} />
+        )}
       </Box>
     </Box>
   );

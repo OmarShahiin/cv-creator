@@ -11,135 +11,42 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { useState } from 'react';
-import img1 from '@/assets/images/cv1.png';
-import AllTemplatesIcon from '@/assets/layer.svg';
-import starFilter from '@/assets/starFilter.svg';
-import art from '@/assets/image.svg';
-import crown from '@/assets/crown.svg';
-import flash from '@/assets/flash.svg';
-import briefcase from '@/assets/briefcase.svg';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Landing/Header';
 import { useNavigate } from 'react-router-dom';
-const templates = [
-  {
-    id: 1,
-    name: 'Jonathan Patterson',
-    image: 'path/to/image1.jpg',
-    type: 'Simple',
-  },
-  {
-    id: 2,
-    name: 'Vince Murray',
-    image: 'path/to/image2.jpg',
-    type: 'Art',
-  },
-  {
-    id: 3,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 4,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 5,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 6,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 7,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 8,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 9,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 10,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 11,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 12,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 13,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 14,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 15,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 16,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-  {
-    id: 17,
-    name: 'Gregory Walls',
-    image: 'path/to/image3.jpg',
-    type: 'Modern',
-  },
-];
+import { useGetCategoriesQuery, useGetTemplatesQuery } from '@/features/home/home';
+
 function Templates() {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedTemplate, setSelectedTemplate] = useState(1);
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
   const navigation = useNavigate();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isMobilexs = useMediaQuery(theme.breakpoints.down(376));
+
+  const { data: categories = [], isLoading: isLoadingCategories } = useGetCategoriesQuery();
+  const { data: templates = [], isLoading: isLoadingTemplates } = useGetTemplatesQuery();
+
   const handleTabChange = (_: any, newValue: any) => {
     setSelectedTab(newValue);
   };
 
-  const handleCardClick = (templateId: any) => {
+  const handleCardClick = (templateId: number) => {
     setSelectedTemplate(templateId);
   };
+
+  const filteredTemplates =
+    selectedTab === 0
+      ? templates
+      : templates.filter((template: any) => template.category === categories[selectedTab]?.id);
+
+  useEffect(() => {
+    // Set the first template as selected by default when templates are loaded
+    if (filteredTemplates.length > 0 && selectedTemplate === null) {
+      setSelectedTemplate(filteredTemplates[0].id);
+    }
+  }, [filteredTemplates, selectedTemplate]);
 
   return (
     <>
@@ -161,7 +68,6 @@ function Templates() {
       <Container
         maxWidth="lg"
         sx={{
-          // backgroundColor: '#F5F6F8',
           paddingTop: '100px',
         }}
       >
@@ -213,188 +119,72 @@ function Templates() {
             paddingInline: '12px',
           }}
         >
-          <Tabs
-            value={selectedTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            // scrollButtons="auto"
-            sx={{ maxHeight: '55px' }}
-          >
-            <Tab
-              label="All Templates"
-              icon={
-                <Box
-                  component={'img'}
-                  src={AllTemplatesIcon}
-                  sx={{
-                    filter: selectedTab === 0 ? 'unset' : 'grayscale(100%)',
-                  }}
-                />
-              }
-              disableRipple
-              sx={{
-                '&.MuiTab-root': {
-                  minHeight: '55px',
-                },
-              }}
-              iconPosition="start"
-            />
-            <Tab
-              label="Simple"
-              icon={
-                <Box
-                  component={'img'}
-                  src={starFilter}
-                  sx={{
-                    filter: selectedTab === 1 ? 'unset' : 'grayscale(100%)',
-                  }}
-                />
-              }
-              disableRipple
-              sx={{
-                '&.MuiTab-root': {
-                  minHeight: '55px',
-                },
-              }}
-              iconPosition="start"
-            />
-            <Tab
-              label="Art"
-              icon={
-                <Box
-                  component={'img'}
-                  src={art}
-                  sx={{
-                    filter: selectedTab === 2 ? 'unset' : 'grayscale(100%)',
-                  }}
-                />
-              }
-              disableRipple
-              sx={{
-                '&.MuiTab-root': {
-                  minHeight: '55px',
-                },
-              }}
-              iconPosition="start"
-            />
-            <Tab
-              label="Modern"
-              icon={
-                <Box
-                  component={'img'}
-                  src={crown}
-                  sx={{
-                    filter: selectedTab === 3 ? 'unset' : 'grayscale(100%)',
-                  }}
-                />
-              }
-              disableRipple
-              sx={{
-                '&.MuiTab-root': {
-                  minHeight: '55px',
-                },
-              }}
-              iconPosition="start"
-            />
-            <Tab
-              label="Creative"
-              icon={
-                <Box
-                  component={'img'}
-                  src={flash}
-                  sx={{
-                    filter: selectedTab === 4 ? 'unset' : 'grayscale(100%)',
-                  }}
-                />
-              }
-              disableRipple
-              sx={{
-                '&.MuiTab-root': {
-                  minHeight: '55px',
-                },
-              }}
-              iconPosition="start"
-            />
-            <Tab
-              label="Professional"
-              icon={
-                <Box
-                  component={'img'}
-                  src={briefcase}
-                  sx={{
-                    filter: selectedTab === 5 ? 'unset' : 'grayscale(100%)',
-                  }}
-                />
-              }
-              disableRipple
-              sx={{
-                '&.MuiTab-root': {
-                  minHeight: '55px',
-                },
-              }}
-              iconPosition="start"
-            />
+          <Tabs value={selectedTab} onChange={handleTabChange} variant="scrollable" sx={{ maxHeight: '55px' }}>
+            <Tab label="All Templates" />
+            {categories.map((category: any) => (
+              <Tab key={category.id} label={category.name} />
+            ))}
           </Tabs>
         </Box>
 
-        <Grid container spacing={2}>
-          {templates.map((template) => (
-            <Grid
-              size={{
-                xs: 6,
-                sm: 6,
-                md: 3,
-              }}
-              key={template.id}
-            >
-              <Card
-                onClick={() => handleCardClick(template.id)}
-                sx={{
-                  minWidth: isMobile ? '160px' : '272px',
-                  height: isMobile ? '254px' : '479px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  backgroundImage: `url(${img1})`,
-                  backgroundSize: isMobile ? '180px 254px' : '272px 479px',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                  border: selectedTemplate === template.id ? '7px solid rgba(173, 192, 240, 0.35)' : 'none',
-                  cursor: 'pointer',
+        {isLoadingCategories || isLoadingTemplates ? (
+          <Typography textAlign="center">Loading...</Typography>
+        ) : (
+          <Grid container spacing={2}>
+            {filteredTemplates.map((template: any) => (
+              <Grid
+                size={{
+                  xs: 6,
+                  sm: 6,
+                  md: 3,
                 }}
+                key={template.id}
               >
-                <CardContent
+                <Card
+                  onClick={() => handleCardClick(template.id)}
                   sx={{
+                    minWidth: isMobile ? '160px' : '272px',
+                    height: isMobile ? '254px' : '479px',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    height: '100%',
-                    paddingInline: 'px',
+                    backgroundImage: `url(${template.image})`,
+                    backgroundPosition: 'center',
+                    border: selectedTemplate === template.id ? '7px solid rgba(173, 192, 240, 0.35)' : 'none',
+                    cursor: 'pointer',
+                    backgroundSize: '100% 100%',
+                    backgroundRepeat: 'no-repeat',
                   }}
                 >
-                  {selectedTemplate === template.id && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{
-                        // maxWidth: '134px',
-                        fontSize: isMobile ? '8px' : '12px',
-                        fontWeight: '400',
-                        fontFamily: 'Poppins',
-                        textTransform: 'none',
-                        zIndex: 99,
-                      }}
-                      onClick={() => {
-                        navigation('/create');
-                      }}
-                    >
-                      Use This Template
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                  <CardContent
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-end',
+                      height: '100%',
+                    }}
+                  >
+                    {selectedTemplate === template.id && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                          fontSize: isMobile ? '8px' : '12px',
+                          fontWeight: '400',
+                          fontFamily: 'Poppins',
+                          textTransform: 'none',
+                          zIndex: 99,
+                        }}
+                        onClick={() => navigation('/create', { state: { templateId: template.id } })}
+                      >
+                        Use This Template
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Container>
     </>
   );

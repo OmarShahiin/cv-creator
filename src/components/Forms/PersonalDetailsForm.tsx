@@ -4,7 +4,18 @@ import { TextField } from 'formik-mui';
 import { Typography, Avatar, Box, InputLabel } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
-const PersonalDetailsForm: React.FC = () => {
+interface PersonalDetailsFormProps {
+  initialData: {
+    fullName: string;
+    email: string;
+    phone: string;
+    country: string;
+    city: string;
+    uploadImage?: File | string;
+  };
+}
+
+const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData }) => {
   return (
     <Box
       sx={{
@@ -18,12 +29,12 @@ const PersonalDetailsForm: React.FC = () => {
     >
       <Formik
         initialValues={{
-          fullName: '',
-          email: '',
-          phone: '',
-          country: '',
-          city: '',
-          uploadImage: '',
+          fullName: initialData.fullName || '',
+          email: initialData.email || '',
+          phone: initialData.phone || '',
+          country: initialData.country || '',
+          city: initialData.city || '',
+          uploadImage: initialData.uploadImage || '',
         }}
         onSubmit={(values) => {
           console.log(values);
@@ -81,7 +92,13 @@ const PersonalDetailsForm: React.FC = () => {
                 }}
               >
                 <Grid container justifyContent="flex-start" alignItems="center" direction="row" columnGap={2}>
-                  <Avatar alt="Profile Image" sx={{ width: '47px', height: '47px', borderRadius: '10px' }} />
+                  <Avatar
+                    alt="Profile Image"
+                    src={
+                      typeof initialData.uploadImage === 'string' ? initialData.uploadImage : undefined
+                    }
+                    sx={{ width: '47px', height: '47px', borderRadius: '10px' }}
+                  />
                   <input
                     accept="image/*"
                     id="upload-image"

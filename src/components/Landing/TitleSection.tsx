@@ -5,9 +5,12 @@ import image2 from '@/assets/images/image2.png';
 import image3 from '@/assets/images/image3.png';
 import correctSign from '@/assets/images/correctSign.svg';
 import Header from './Header';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 const TitleSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation();
 
   return (
     <Box
@@ -64,17 +67,17 @@ const TitleSection = () => {
             // top: '109px',
             // left: 'calc(50% - 107px)',
             fontSize: '12px',
-            letterSpacing: '0.3em',
+            letterSpacing: i18n.dir() == "ltr" ? '0.3em' :"0em",
             lineHeight: '150%',
             fontWeight: 600,
             color: '#838291',
-            fontFamily: 'Poppins',
+            fontFamily: i18n.dir() == "ltr" ?'Poppins' :'IBM Plex Sans Arabic-SemiBold',
             mt: '36px',
             zIndex: 2,
           }}
         >
-          ONLINE RESUME BUILDER
-        </Typography>
+          {t('onlineResumeBuilder')}
+          </Typography>
         <Typography
           // variant="h4"
           // component="b"
@@ -86,7 +89,7 @@ const TitleSection = () => {
             // display: 'inline-block',
             width: isMobile ? '340px' : '706px',
             fontSize: isMobile ? '30px' : '40px',
-            fontFamily: 'Poppins',
+            fontFamily: i18n.dir() == "ltr"  ?'Poppins':"IBM Plex Sans Arabic",
             color: '#2b2a44',
             fontWeight: '700',
             // backgroundColor: 'red',
@@ -95,8 +98,8 @@ const TitleSection = () => {
             zIndex: 2,
           }}
         >
-          First step to be expert, build your resume
-        </Typography>
+          {t('firstStepTitle')}
+          </Typography>
 
         {/* Button */}
         <Button
@@ -118,8 +121,8 @@ const TitleSection = () => {
             },
           }}
         >
-          Create Your Resume
-        </Button>
+          {t('createResumeButton')}
+          </Button>
 
         <Box sx={{}}>
           <Box
@@ -210,19 +213,20 @@ const TitleSection = () => {
                   backgroundColor: '#fff',
                   width: '100%',
                   height: '100%',
-                  paddingInline: '1rem',
+                  // paddingInline: '1rem',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent:'center'
                 }}
               >
                 <Stack
                   direction="row"
-                  spacing={1}
                   sx={
                     {
                       // position: 'absolute',
                       // top: '16.16px',
                       // left: '21.22px',
+                      columnGap:"5px"
                     }
                   }
                 >
@@ -230,7 +234,7 @@ const TitleSection = () => {
                   {Array(5)
                     .fill(0)
                     .map((_, idx) => (
-                      <Box component="img" key={idx} src={Star} alt="Star" sx={{ width: '26.4px', height: '26.4px' }} />
+                      <Box component="img" key={idx} src={Star} alt="Star" />
                     ))}
                 </Stack>
               </Box>

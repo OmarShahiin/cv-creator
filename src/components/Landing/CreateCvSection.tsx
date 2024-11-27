@@ -1,8 +1,10 @@
 import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
 import imageBG from '@/assets/images/imageCreateCV.png'; // Update the path to your image
 import cvs from '@/assets/📄 Mockup.svg'; // Update the path to your image
+import { useTranslation } from 'react-i18next';
 
 const CreateCvSection = () => {
+  const { t } = useTranslation(); // Use translation hook
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -10,7 +12,6 @@ const CreateCvSection = () => {
     <Box
       sx={{
         width: '100%',
-        // height: isMobile ? '502px' : '434px',
         borderRadius: '23px',
         overflow: 'hidden',
         textAlign: 'left',
@@ -25,11 +26,9 @@ const CreateCvSection = () => {
       <Box
         sx={{
           backgroundImage: `url(${imageBG})`,
-
           maxWidth: '1200px',
           margin: 'auto',
           width: isMobile ? '95%' : '1200px',
-          // maxHeight: '434px',
           borderRadius: '24px',
           backgroundColor: '#0e41fc',
           paddingTop: isMobile ? '38px' : '58px',
@@ -40,37 +39,41 @@ const CreateCvSection = () => {
           overflowY: 'hidden',
         }}
       >
-        <Box p={0}>
+        <Box p={0} sx={{
+            textAlign:"start",
+            justifyItems: 'start',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'start',
+        }}>
           <Typography
             sx={{
               fontWeight: '900',
-              // lineHeight: '131%',
-              padding: 0,
               fontSize: isMobile ? '34px' : '58px',
               maxWidth: '416px',
+            
             }}
           >
-            Create Your CV Today!
+            {t('createCvSection.title')}
           </Typography>
           <Typography
             variant="body1"
             sx={{
-              fontSize: isMobile ? '' : '18px',
-              // lineHeight: '146%',
+              fontSize: isMobile ? '14px' : '18px',
               maxWidth: '416px',
-              fontWeight: isMobile ? '' : '400',
+              fontWeight: '400',
               marginTop: '23px',
-              // marginBottom: '34px',
+              textAlign:"start"
             }}
           >
-            Build a professional CV that stands out in the job market.
+            {t('createCvSection.subtitle')}
           </Typography>
 
           <Button
             variant="contained"
             sx={{
               fontWeight: isMobile ? '700' : 'bold',
-              fontSize: isMobile ? '14' : '14px',
+              fontSize: '14px',
               paddingBlock: '14px',
               paddingInline: '20px',
               backgroundColor: '#FFF',
@@ -78,9 +81,10 @@ const CreateCvSection = () => {
               color: 'black',
               borderRadius: '13px',
               textTransform: 'none',
+              mt: '30px',
             }}
           >
-            Create Your Resume
+            {t('createCvSection.button')}
           </Button>
         </Box>
         <Box component="img" src={cvs} alt="" sx={{}} />
