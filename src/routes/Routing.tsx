@@ -9,6 +9,7 @@ import JobDescriptionForm from '@/components/Steps/JobDiscription';
 import NameForm from '@/components/Steps/NameForm';
 import Loading from '@/pages/Steps/Loading';
 import FinalStep from '@/pages/Steps/FinalStep';
+import { LinkedInCallback } from 'react-linkedin-login-oauth2';
 
 const Routing = () => {
   return (
@@ -24,6 +25,7 @@ const Routing = () => {
         <Route path="Name" element={<NameForm />} />
         <Route path="final-step" element={<FinalStep />} />
       </Route>
+      <Route  path="/linkedin" element={<LinkedInCallback />} />
     </Routes>
   );
 };

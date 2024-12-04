@@ -4,14 +4,14 @@ import EnAppLogo from '@/assets/appLogo.svg';
 import arAppLogo from '@/assets/appLogoAr.svg';
 import TemporaryDrawer from './Drawer';
 import { useNavigate } from 'react-router-dom';
-import TranslateIcon from '@mui/icons-material/Translate';
 import { useAppDispatch, useAppSelector } from '@/app/store';
 import { setLanguage } from '@/features/user/userSlice';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
-
+import { useJwt } from 'react-jwt';
+import PersonIcon from '@mui/icons-material/Person';
 const Header = () => {
-  const { t } = useTranslation(); // Add translation hook
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
   const theme = useTheme();
@@ -19,6 +19,8 @@ const Header = () => {
   const navigation = useNavigate();
   const dispatch = useAppDispatch();
   const language = useAppSelector((state) => state.user.language);
+  const user = useAppSelector((state) => state.user);
+  const { decodedToken, isExpired } = useJwt(user.accessToken ?? '');
 
   const handleChangeLanguage = () => {
     const newLanguage = language === 'en' ? 'ar' : 'en';
@@ -29,7 +31,6 @@ const Header = () => {
     document.documentElement.setAttribute('dir', newLanguage === 'en' ? 'ltr' : 'rtl');
   };
 
-  // Ensure direction is updated on initial render
   useEffect(() => {
     document.documentElement.setAttribute('dir', language === 'en' ? 'ltr' : 'rtl');
   }, [language]);
@@ -50,15 +51,21 @@ const Header = () => {
       }}
     >
       {/* Logo */}
-      <Box
-        component="img"
-        src={i18n.dir() == "ltr" ? EnAppLogo : arAppLogo}
-        alt={t('appLogoAlt')} // Add alt text for translation
-        sx={{
-          width: '73.7px',
-          height: '32.6px',
-        }}
-      />
+      <Box flex={0.5} display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+        <Box
+          onClick={() => navigation('/')}
+          component="img"
+          src={i18n.dir() === 'ltr' ? EnAppLogo : arAppLogo}
+          alt={t('appLogoAlt')}
+          sx={{
+            width: '73.7px',
+            height: '32.6px',
+            ':hover': {
+              cursor: 'pointer',
+            },
+          }}
+        />
+      </Box>
 
       {/* Navigation Links */}
       {!isMobile && (
@@ -71,7 +78,7 @@ const Header = () => {
             gap: '15px',
           }}
         >
-          {['cvBuilder', 'features.navtitle', 'pricing', 'aboutUs'].map((key, index) => (
+          {[].map((key, index) => (
             <Box
               key={index}
               sx={{
@@ -80,9 +87,7 @@ const Header = () => {
                 gap: '15px',
               }}
             >
-              <Typography sx={{ lineHeight: '150%', color: '#2B2A44', cursor: 'pointer' }}>
-                {t(key)}
-              </Typography>
+              <Typography sx={{ lineHeight: '150%', color: '#2B2A44', cursor: 'pointer' }}>{t(key)}</Typography>
               {index < 3 && (
                 <Box
                   sx={{
@@ -98,32 +103,53 @@ const Header = () => {
         </Box>
       )}
 
-      {/* Language Switch and Get Started Button */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      {/* Language Switch and Profile or Get Started */}
+      <Box
+        sx={{
+          flex: 0.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+        }}
+      >
         {!isMobile && (
-          <Button
-            onClick={handleChangeLanguage}
-            sx={{ display: { md: 'inline-flex' } }}
-          >
+          <Button onClick={handleChangeLanguage} sx={{ display: { md: 'inline-flex' } }}>
             {language === 'en' ? 'AR' : 'EN'}
           </Button>
         )}
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: '#0e41fc',
-            borderRadius: '8px',
-            padding: '7px 12px',
-            fontWeight: 600,
-            lineHeight: '150%',
-            zIndex: 3,
-          }}
-          onClick={() => {
-            navigation('/register');
-          }}
-        >
-          {t('getStarted')}
-        </Button>
+        {decodedToken && !isExpired ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <PersonIcon
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+              }}
+            />
+            <Typography sx={{ fontFamily: 'Poppins', fontSize: 14, fontWeight: 400, color: '#2B2A44' }}>
+              {'user@gmail.com'}
+            </Typography>
+          </Box>
+        ) : (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: '#0e41fc',
+              borderRadius: '8px',
+              padding: '7px 12px',
+              fontWeight: 600,
+              lineHeight: '150%',
+              zIndex: 3,
+            }}
+            onClick={() => {
+              navigation('/register');
+            }}
+          >
+            {t('getStarted')}
+          </Button>
+        )}
         {isMobile && (
           <TemporaryDrawer open={open} toggleDrawer={toggleDrawer} onChangeLanguage={handleChangeLanguage} />
         )}

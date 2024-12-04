@@ -8,6 +8,7 @@ import {
   Button,
   Box,
   Divider,
+  InputLabel,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Formik, Form, Field, FieldArray } from 'formik';
@@ -15,12 +16,12 @@ import * as Yup from 'yup';
 
 interface EmploymentEntry {
   id: number;
-  companyName: string;
-  jobTitle: string;
+  company: string;
+  job_title: string;
   employer: string;
-  startDate: string;
-  endDate: string;
-  city: string;
+  start_date: string;
+  end_date: string;
+  location: string;
   description: string;
 }
 
@@ -32,23 +33,22 @@ interface EmploymentHistoryProps {
 const EmploymentSchema = Yup.object().shape({
   employmentEntries: Yup.array().of(
     Yup.object().shape({
-      jobTitle: Yup.string().required('Job title is required'),
-      employer: Yup.string().required('Employer is required'),
-      startDate: Yup.string().required('Start date is required'),
-      endDate: Yup.string().required('End date is required'),
-      city: Yup.string().required('City is required'),
+      job_title: Yup.string().required('Job title is required'),
+      company: Yup.string().required('Employer is required'),
+      start_date: Yup.string().required('Start date is required'),
+      end_date: Yup.string().required('End date is required'),
+      location: Yup.string().required('City is required'),
       description: Yup.string().required('Description is required'),
-    })
+    }),
   ),
 });
 
 const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUpdate }) => {
+  console.log('initialData', initialData);
   const [expanded, setExpanded] = useState<number[]>([]); // Array to track expanded states
 
   const handleAccordionChange = (id: number) => {
-    setExpanded((prev) =>
-      prev.includes(id) ? prev.filter((expandedId) => expandedId !== id) : [...prev, id]
-    );
+    setExpanded((prev) => (prev.includes(id) ? prev.filter((expandedId) => expandedId !== id) : [...prev, id]));
   };
 
   return (
@@ -66,14 +66,15 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
             sx={{
               backgroundColor: '#fff',
               borderRadius: '16px',
+              width: '100%',
             }}
           >
-            <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }}>
+            <Typography sx={{ fontSize: '18px', textAlign: 'left', fontWeight: '600', fontFamily: 'Poppins' }}>
               Employment History
             </Typography>
             <FieldArray name="employmentEntries">
               {({ push }) => (
-                <>
+                <Box>
                   {values.employmentEntries.map((entry, index) => (
                     <Accordion
                       key={index}
@@ -101,7 +102,7 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                             color: '#2B2A44',
                           }}
                         >
-                          {entry.companyName || 'New Entry'}
+                          {entry.company || 'New Entry'}
                         </Typography>
                       </AccordionSummary>
                       {expanded.includes(index) && (
@@ -119,10 +120,10 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                         <Box display="flex" flexDirection="column" gap={2}>
                           <Box display="flex" gap={2}>
                             <Box flex={1}>
-                              <Typography variant="caption">Job Title</Typography>
+                              <InputLabel>Job Title</InputLabel>
                               <Field
                                 size="small"
-                                name={`employmentEntries[${index}].jobTitle`}
+                                name={`employmentEntries[${index}].job_title`}
                                 as={TextField}
                                 placeholder="Job title"
                                 variant="outlined"
@@ -131,10 +132,10 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                               />
                             </Box>
                             <Box flex={1}>
-                              <Typography variant="caption">Employer</Typography>
+                              <InputLabel>Employer</InputLabel>
                               <Field
                                 size="small"
-                                name={`employmentEntries[${index}].employer`}
+                                name={`employmentEntries[${index}].company`}
                                 as={TextField}
                                 placeholder="Employer"
                                 variant="outlined"
@@ -142,18 +143,17 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                                 sx={{ borderRadius: '8px' }}
                                 onChange={(e: any) => {
                                   const employerValue = e.target.value;
-                                  setFieldValue(`employmentEntries[${index}].employer`, employerValue);
-                                  setFieldValue(`employmentEntries[${index}].companyName`, employerValue); // Sync companyName
+                                  setFieldValue(`employmentEntries[${index}].company`, employerValue);
                                 }}
                               />
                             </Box>
                           </Box>
                           <Box display="flex" gap={2}>
                             <Box flex={1}>
-                              <Typography variant="caption">Start Date</Typography>
+                              <InputLabel>Start Date</InputLabel>
                               <Field
                                 size="small"
-                                name={`employmentEntries[${index}].startDate`}
+                                name={`employmentEntries[${index}].start_date`}
                                 as={TextField}
                                 placeholder="MM/YY"
                                 variant="outlined"
@@ -162,7 +162,7 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                               />
                             </Box>
                             <Box flex={1}>
-                              <Typography variant="caption">End Date</Typography>
+                              <InputLabel>End Date</InputLabel>
                               <Field
                                 size="small"
                                 name={`employmentEntries[${index}].endDate`}
@@ -175,10 +175,10 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                             </Box>
                           </Box>
                           <Box>
-                            <Typography variant="caption">City</Typography>
+                            <InputLabel>City</InputLabel>
                             <Field
                               size="small"
-                              name={`employmentEntries[${index}].city`}
+                              name={`employmentEntries[${index}].location`}
                               as={TextField}
                               placeholder="City"
                               variant="outlined"
@@ -187,7 +187,7 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                             />
                           </Box>
                           <Box>
-                            <Typography variant="caption">Description</Typography>
+                            <InputLabel>Description</InputLabel>
                             <Field
                               size="small"
                               name={`employmentEntries[${index}].description`}
@@ -204,35 +204,42 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                       </AccordionDetails>
                     </Accordion>
                   ))}
-                  <Button
-                    onClick={() =>
-                      push({
-                        id: values.employmentEntries.length + 1,
-                        companyName: '',
-                        jobTitle: '',
-                        employer: '',
-                        startDate: '',
-                        endDate: '',
-                        city: '',
-                        description: '',
-                      })
-                    }
-                    color="primary"
-                    sx={{ marginTop: '16px' }}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}
                   >
-                    + Add More
-                  </Button>
-                </>
+                    <Button
+                      onClick={() =>
+                        push({
+                          id: values.employmentEntries.length + 1,
+                          companyName: '',
+                          jobTitle: '',
+                          employer: '',
+                          startDate: '',
+                          endDate: '',
+                          city: '',
+                          description: '',
+                        })
+                      }
+                      color="primary"
+                      sx={{
+                        marginTop: '16px',
+                        alignSelf: 'flex-start',
+
+                        '&:hover': {
+                          backgroundColor: '#FFF',
+                        },
+                      }}
+                    >
+                      + Add More
+                    </Button>
+                  </Box>
+                </Box>
               )}
             </FieldArray>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{ marginTop: '16px', textTransform: 'none' }}
-            >
-              Save Changes
-            </Button>
           </Box>
         </Form>
       )}

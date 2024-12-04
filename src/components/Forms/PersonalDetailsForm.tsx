@@ -49,6 +49,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData }
                 fontFamily: 'Poppins',
                 color: '#2B2A44',
                 marginBottom: '16px',
+                textAlign:"left"
               }}
             >
               Personal Details

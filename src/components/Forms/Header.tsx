@@ -34,6 +34,7 @@ const ResumeHeader: React.FC<ResumeHeaderProps> = ({ name, score, improvement })
           fontSize: '18px',
           fontWeight: '700',
           fontFamily: 'Poppins',
+          textAlign: 'left',
         }}
         mb={'16px'}
       >

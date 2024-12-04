@@ -23,14 +23,14 @@ const Ending = () => {
         marginBottom: isMobile ? '28px' : '145px',
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
-        justifyContent: i18n.dir() == "ltr" ?'space-between':"flex-start",
-        columnGap : isMobile ? '0px' : '100px',
+        justifyContent: i18n.dir() == 'ltr' ? 'space-between' : 'flex-start',
+        columnGap: isMobile ? '0px' : '100px',
       }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column',alignContent: 'start' }}> 
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignContent: 'start' }}>
         <Box
           component="img"
-          src={i18n.dir() == "ltr"?  enAppLogo:arAppLogo}
+          src={i18n.dir() == 'ltr' ? enAppLogo : arAppLogo}
           alt={t('ending.logoAlt')} // Translatable alt text
           sx={{
             width: '113px',
@@ -57,7 +57,7 @@ const Ending = () => {
         }}
       >
         {/* About Us Section */}
-        <Box >
+        <Box>
           <Typography sx={{ fontWeight: 600, fontSize: isMobile ? '14px' : '16px' }}>
             {t('ending.aboutUs.title')}
           </Typography>
@@ -78,9 +78,6 @@ const Ending = () => {
           </Typography>
           <Stack spacing={1} sx={{ marginTop: isMobile ? '10px' : '42px' }}>
             <Link color="#000" href="#" sx={{ fontSize: '12px' }}>
-              {t('ending.resources.faq')}
-            </Link>
-            <Link color="#000" href="#" sx={{ fontSize: '12px' }}>
               {t('ending.resources.terms')}
             </Link>
             <Link color="#000" href="#" sx={{ fontSize: '12px' }}>
@@ -95,7 +92,7 @@ const Ending = () => {
             {t('ending.contactUs.title')}
           </Typography>
           <Stack spacing={1} sx={{ marginTop: isMobile ? '10px' : '42px' }}>
-            <Link color="#000" href="mailto:hello@relume.io" sx={{ fontSize: '12px' }}>
+            <Link color="#000" href={`⁠support@tobe.expert`} sx={{ fontSize: '12px' }}>
               {t('ending.contactUs.email')}
             </Link>
           </Stack>

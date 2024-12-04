@@ -7,10 +7,12 @@ import correctSign from '@/assets/images/correctSign.svg';
 import Header from './Header';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
+import { useNavigate } from 'react-router-dom';
 const TitleSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
+  const navigation = useNavigate();
 
   return (
     <Box
@@ -67,17 +69,17 @@ const TitleSection = () => {
             // top: '109px',
             // left: 'calc(50% - 107px)',
             fontSize: '12px',
-            letterSpacing: i18n.dir() == "ltr" ? '0.3em' :"0em",
+            letterSpacing: i18n.dir() == 'ltr' ? '0.3em' : '0em',
             lineHeight: '150%',
             fontWeight: 600,
             color: '#838291',
-            fontFamily: i18n.dir() == "ltr" ?'Poppins' :'IBM Plex Sans Arabic-SemiBold',
+            fontFamily: i18n.dir() == 'ltr' ? 'Poppins' : 'IBM Plex Sans Arabic-SemiBold',
             mt: '36px',
             zIndex: 2,
           }}
         >
           {t('onlineResumeBuilder')}
-          </Typography>
+        </Typography>
         <Typography
           // variant="h4"
           // component="b"
@@ -89,7 +91,7 @@ const TitleSection = () => {
             // display: 'inline-block',
             width: isMobile ? '340px' : '706px',
             fontSize: isMobile ? '30px' : '40px',
-            fontFamily: i18n.dir() == "ltr"  ?'Poppins':"IBM Plex Sans Arabic",
+            fontFamily: i18n.dir() == 'ltr' ? 'Poppins' : 'IBM Plex Sans Arabic',
             color: '#2b2a44',
             fontWeight: '700',
             // backgroundColor: 'red',
@@ -99,10 +101,13 @@ const TitleSection = () => {
           }}
         >
           {t('firstStepTitle')}
-          </Typography>
+        </Typography>
 
         {/* Button */}
         <Button
+          onClick={() => {
+            navigation('/register');
+          }}
           sx={{
             // position: 'absolute',
             // top: '260px',
@@ -122,7 +127,7 @@ const TitleSection = () => {
           }}
         >
           {t('createResumeButton')}
-          </Button>
+        </Button>
 
         <Box sx={{}}>
           <Box
@@ -216,19 +221,17 @@ const TitleSection = () => {
                   // paddingInline: '1rem',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent:'center'
+                  justifyContent: 'center',
                 }}
               >
                 <Stack
                   direction="row"
-                  sx={
-                    {
-                      // position: 'absolute',
-                      // top: '16.16px',
-                      // left: '21.22px',
-                      columnGap:"5px"
-                    }
-                  }
+                  sx={{
+                    // position: 'absolute',
+                    // top: '16.16px',
+                    // left: '21.22px',
+                    columnGap: '5px',
+                  }}
                 >
                   {/* Star icons */}
                   {Array(5)

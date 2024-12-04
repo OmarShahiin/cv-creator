@@ -8,6 +8,7 @@ import {
   Button,
   Box,
   Divider,
+  InputLabel,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Formik, Form, Field, FieldArray } from 'formik';
@@ -37,7 +38,7 @@ const EducationSchema = Yup.object().shape({
       endDate: Yup.string().required('End date is required'),
       city: Yup.string().required('City is required'),
       description: Yup.string().required('Description is required'),
-    })
+    }),
   ),
 });
 
@@ -65,7 +66,9 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
               borderRadius: '16px',
             }}
           >
-            <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }}>Education</Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins', textAlign: 'left' }}>
+              Education
+            </Typography>
             <FieldArray name="educationEntries">
               {({ push }) => (
                 <>
@@ -115,7 +118,7 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                         <Box display="flex" flexDirection="column" gap={2}>
                           <Box display="flex" gap={2}>
                             <Box flex={1}>
-                              <Typography variant="caption">School</Typography>
+                              <InputLabel>School</InputLabel>
                               <Field
                                 size="small"
                                 name={`educationEntries[${index}].School`}
@@ -131,7 +134,7 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                               />
                             </Box>
                             <Box flex={1}>
-                              <Typography variant="caption">Degree</Typography>
+                              <InputLabel>Degree</InputLabel>
                               <Field
                                 size="small"
                                 name={`educationEntries[${index}].Degree`}
@@ -143,9 +146,9 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                               />
                             </Box>
                           </Box>
-                          <Box display="flex" gap={2}>
+                          <Box display="flex" gap={2} justifyContent={'flex-start'}>
                             <Box flex={1}>
-                              <Typography variant="caption">Start Date</Typography>
+                              <InputLabel>Start Date</InputLabel>
                               <Field
                                 size="small"
                                 name={`educationEntries[${index}].startDate`}
@@ -157,7 +160,7 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                               />
                             </Box>
                             <Box flex={1}>
-                              <Typography variant="caption">End Date</Typography>
+                              <InputLabel>End Date</InputLabel>
                               <Field
                                 size="small"
                                 name={`educationEntries[${index}].endDate`}
@@ -170,7 +173,7 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                             </Box>
                           </Box>
                           <Box>
-                            <Typography variant="caption">City</Typography>
+                            <InputLabel>City</InputLabel>
                             <Field
                               size="small"
                               name={`educationEntries[${index}].city`}
@@ -182,7 +185,7 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                             />
                           </Box>
                           <Box>
-                            <Typography variant="caption">Description</Typography>
+                            <InputLabel>Description</InputLabel>
                             <Field
                               size="small"
                               name={`educationEntries[${index}].description`}
@@ -199,34 +202,41 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                       </AccordionDetails>
                     </Accordion>
                   ))}
-                  <Button
-                    onClick={() =>
-                      push({
-                        id: values.educationEntries.length + 1,
-                        School: '',
-                        Degree: '',
-                        startDate: '',
-                        endDate: '',
-                        city: '',
-                        description: '',
-                      })
-                    }
-                    color="primary"
-                    sx={{ marginTop: '16px' }}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                    }}
                   >
-                    + Add More
-                  </Button>
+                    <Button
+                      onClick={() =>
+                        push({
+                          id: values.educationEntries.length + 1,
+                          School: '',
+                          Degree: '',
+                          startDate: '',
+                          endDate: '',
+                          city: '',
+                          description: '',
+                        })
+                      }
+                      color="primary"
+                      sx={{
+                        marginTop: '16px',
+                        alignSelf: 'flex-start',
+
+                        '&:hover': {
+                          backgroundColor: '#FFF',
+                        },
+                      }}
+                    >
+                      + Add More
+                    </Button>
+                  </Box>
                 </>
               )}
             </FieldArray>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{ marginTop: '16px', textTransform: 'none' }}
-            >
-              Save Changes
-            </Button>
           </Box>
         </Form>
       )}

@@ -1,4 +1,4 @@
-import { Box, Button, Link, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button,  Link, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import side from '@/assets/sideSvg.svg';
 import Applogo from '@/assets/appLogo.svg';
 import { useState } from 'react';
@@ -20,27 +20,49 @@ export const OTP = () => {
   const [validateOtp, { isLoading: isValidating }] = useValidateOtpMutation();
   const [resendOtp, { isLoading: isResending }] = useSendOtpMutation();
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pastedData = e.clipboardData.getData('text');
+    if (/^\d+$/.test(pastedData)) {
+      const newOtp = [...otp];
+      for (let i = 0; i < pastedData.length && i < otp.length; i++) {
+        newOtp[i] = pastedData[i];
+      }
+      setOtp(newOtp);
+  
+      // Focus the next empty field
+      const firstEmptyIndex = newOtp.findIndex((val) => val === '');
+      if (firstEmptyIndex !== -1) {
+        document?.getElementById(`otp-${firstEmptyIndex}`)?.focus();
+      }
+    }
+  };
+  
   const handleChange = (e: any, index: number) => {
     const value = e.target.value;
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
+  
       // Move to the next input automatically
       if (value && index < otp.length - 1) {
         document?.getElementById(`otp-${index + 1}`)?.focus();
       }
     }
   };
+  
+  const handleKeyDown = (e:any, index: number) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      // Move focus to the previous input if backspace is pressed and the current field is empty
+      document?.getElementById(`otp-${index - 1}`)?.focus();
+    }
+  };
 
   const handleResendCode = async () => {
+
     try {
       await resendOtp({ email }).unwrap();
-      alert('OTP has been resent to your email');
     } catch (error) {
-      console.error('Error resending OTP:', error);
-      alert('Failed to resend OTP. Please try again.');
     }
   };
 
@@ -52,7 +74,8 @@ export const OTP = () => {
     }
 
     try {
-      const datares: any = await validateOtp({ email, otp: '518700' }).unwrap();
+      console.log('email', email)
+      const datares: any = await validateOtp({ email, otp: otp.toString().replace(/,/g, '')  }).unwrap();
       console.log('datares', datares);
       dispatch(
         setCredentials({
@@ -121,37 +144,44 @@ export const OTP = () => {
             <Box display="flex" justifyContent="space-between" columnGap={2} marginBlock={2} width="100%">
               {otp.map((digit, index) => (
                 <TextField
-                  key={index}
-                  id={`otp-${index}`}
-                  variant="outlined"
-                  value={digit}
-                  onChange={(e) => handleChange(e, index)}
-                  inputProps={{
-                    maxLength: 1,
-                    style: { textAlign: 'center' },
-                  }}
-                  sx={{
-                    width: '60px',
-                    height: '47px',
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '8px',
-                      paddingInline: isMobilexs ? '8px' : '12px',
-                    },
-                  }}
-                />
+                key={index}
+                id={`otp-${index}`}
+                variant="outlined"
+                value={digit}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                onPaste={handlePaste}
+                inputProps={{
+                  maxLength: 1,
+                  style: { textAlign: 'center' },
+                }}
+                sx={{
+                  width: '60px',
+                  height: '47px',
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                  },
+                }}
+              />
               ))}
             </Box>
-            <Link
-              href="#"
+            <Button
+            disableRipple
+            disableFocusRipple
               onClick={handleResendCode}
               color="primary"
-              underline="hover"
-              mb={2}
-              mr="auto"
-              sx={{ cursor: isResending ? 'not-allowed' : 'pointer' }}
-            >
+              sx={{ 
+                marginRight:"auto",
+                cursor: isResending ? 'not-allowed' : 'pointer' ,
+                "&:hover": {
+                  bgcolor: "#FFF",
+                  opacity: isResending ? 0.5 : 1,
+                  
+              }}}
+              variant='text'
+>
               {isResending ? 'Resending...' : 'Send code again'}
-            </Link>
+            </Button>
 
             <Button
               variant="contained"

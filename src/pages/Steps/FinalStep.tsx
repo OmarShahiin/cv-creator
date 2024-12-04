@@ -14,21 +14,21 @@ const FinalStep = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
 
   const [htmlPreviewVisible, setHtmlPreviewVisible] = useState(false);
-const location = useLocation();
-const response = location.state?.response;
+  const location = useLocation();
+  const response = location.state?.response;
   // Decode the base64 HTML content
   const decodedHtml = atob(response.file_base64);
-  console.log('decodedHtml', decodedHtml)
+  console.log('decodedHtml', decodedHtml);
 
   const handlePreviewClick = () => {
     setHtmlPreviewVisible(!htmlPreviewVisible);
   };
 
-  const skillsData:any = response.technical_skills.map((skill:any, index:number) => ({
+  const skillsData: any = response.technical_skills.map((skill: any, index: number) => ({
     id: index + 1, // Assign a unique ID to each skill
     label: skill.name,
   }));
-  const initialSelectedSkills = skillsData.map((skill:any) => skill.id);
+  const initialSelectedSkills = skillsData.map((skill: any) => skill.id);
 
   return (
     <Stack direction={isMobile ? 'column' : 'row'} width={'100%'} minHeight={'92vh'}>
@@ -45,69 +45,70 @@ const response = location.state?.response;
       >
         <ResumeHeader name={response.full_name} score={20} improvement={25} />
         <PersonalDetailsForm
-  initialData={{
-    fullName: response.full_name,
-    email: response.email,
-    phone: response.phone,
-    country: response.country,
-    city: response.city,
-    uploadImage: response.photo, // Assuming `photo` contains the image URL
-  }}
-/>
-<AboutMe
-  aboutMe={response.summary}
-  onUpdate={(updatedAboutMe) => {
-    console.log('Updated About Me:', updatedAboutMe);
-    // Send the updated summary to the backend
-    // Example: axios.put('/api/update-summary', { summary: updatedAboutMe });
-  }}
-/>
-        <EmploymentHistory initialData={response.work_experiences}   onUpdate={(updatedAboutMe) => {
-    console.log('Updated About Me:', updatedAboutMe);
-    // Send the updated summary to the backend
-    // Example: axios.put('/api/update-summary', { summary: updatedAboutMe });
-  }}
-  />
+          initialData={{
+            fullName: response.full_name,
+            email: response.email,
+            phone: response.phone,
+            country: response.country,
+            city: response.city,
+            uploadImage: response.photo, // Assuming `photo` contains the image URL
+          }}
+        />
+        <AboutMe
+          aboutMe={response.summary}
+          onUpdate={(updatedAboutMe) => {
+            console.log('Updated About Me:', updatedAboutMe);
+          }}
+        />
+        <EmploymentHistory
+          initialData={response.work_experiences}
+          onUpdate={(updatedAboutMe) => {
+            console.log('Updated About Me:', updatedAboutMe);
+            // Send the updated summary to the backend
+            // Example: axios.put('/api/update-summary', { summary: updatedAboutMe });
+          }}
+        />
         <Education
-  initialData={[
-    {
-      id: 1,
-      School: 'Ain Shams University',
-      Degree: 'Bachelor of Science',
-      startDate: '2015-09',
-      endDate: '2019-06',
-      city: 'Cairo',
-      description: 'Graduated with a focus in front-end development.',
-    },
-  ]}
-  onUpdate={(updatedData) => {
-    console.log('Updated Education Data:', updatedData);
-    // Handle the updated education data here (e.g., API request)
-  }}
-/>
-<MultiSelectTags
-      initialSelectedSkills={initialSelectedSkills} // Example pre-selected IDs
-      skillsData={skillsData}
-      onUpdate={(updatedData) => {
-        console.log('Updated Education Data:', updatedData);
-        // Handle the updated education data here (e.g., API request)
-      }}
-    />      </Stack>
+          initialData={[
+            {
+              id: 1,
+              School: 'Ain Shams University',
+              Degree: 'Bachelor of Science',
+              startDate: '2015-09',
+              endDate: '2019-06',
+              city: 'Cairo',
+              description: 'Graduated with a focus in front-end development.',
+            },
+          ]}
+          onUpdate={(updatedData) => {
+            console.log('Updated Education Data:', updatedData);
+            // Handle the updated education data here (e.g., API request)
+          }}
+        />
+        <MultiSelectTags
+          initialSelectedSkills={initialSelectedSkills} // Example pre-selected IDs
+          skillsData={skillsData}
+          onUpdate={(updatedData) => {
+            console.log('Updated Education Data:', updatedData);
+            // Handle the updated education data here (e.g., API request)
+          }}
+        />{' '}
+      </Stack>
 
       {isMobile ? undefined : (
-        <Stack flex={1} sx={{ backgroundColor: '#2B2A44', padding: '16px' }}>
-          { (
+        <Stack flex={1} sx={{ backgroundColor: '#2B2A44', padding: '16px', alignItems: 'center' }}>
+          {
             <Box
               sx={{
-                height: '100%',
-                width: '100%',
+                height: '827px',
+                width: '593px',
                 backgroundColor: '#ffffff',
                 overflow: 'auto',
                 borderRadius: '8px',
               }}
               dangerouslySetInnerHTML={{ __html: decodedHtml }} // Render the HTML
             />
-          )}
+          }
         </Stack>
       )}
 

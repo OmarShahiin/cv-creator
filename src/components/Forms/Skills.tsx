@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Chip, Typography } from '@mui/material';
+import { Box, Button, Chip, Typography } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import More from '@/assets/more.svg';
 
@@ -14,11 +14,7 @@ interface MultiSelectTagsProps {
   onUpdate?: (selectedSkills: number[]) => void; // Callback for updates
 }
 
-const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
-  initialSelectedSkills = [],
-  skillsData,
-  onUpdate,
-}) => {
+const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({ initialSelectedSkills = [], skillsData, onUpdate }) => {
   const [selectedSkills, setSelectedSkills] = useState<number[]>(initialSelectedSkills);
 
   // Notify parent of changes
@@ -42,7 +38,16 @@ const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
       }}
     >
       {/* Heading */}
-      <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins', marginBottom: '16px' }}>
+      <Typography
+        sx={{
+          fontSize: '18px',
+          textAlign: 'left',
+
+          fontWeight: '600',
+          fontFamily: 'Poppins',
+          marginBottom: '16px',
+        }}
+      >
         Skills
       </Typography>
       <Box
@@ -78,6 +83,28 @@ const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
             }}
           />
         ))}
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+        }}
+      >
+        <Button
+          onClick={() => {}}
+          color="primary"
+          sx={{
+            marginTop: '16px',
+            alignSelf: 'flex-start',
+
+            '&:hover': {
+              backgroundColor: '#FFF',
+            },
+          }}
+        >
+          + Add More
+        </Button>
       </Box>
     </Box>
   );

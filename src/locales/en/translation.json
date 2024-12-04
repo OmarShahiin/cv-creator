@@ -1,14 +1,14 @@
 {
-    "onlineResumeBuilder": "ONLINE RESUME BUILDER",
-    "firstStepTitle": "First step to be expert, build your resume",
-    "createResumeButton": "Create Your Resume",
-    "appLogoAlt": "App Logo",
-    "cvBuilder": "CV Builder",
-    "featurestitle": "Features",
-    "pricing": "Pricing",
-    "aboutUs": "About Us",
-    "getStarted": "Get Started",
-    "register": {
+  "onlineResumeBuilder": "ONLINE RESUME BUILDER",
+  "firstStepTitle": "First step to be expert, build your resume",
+  "createResumeButton": "Create Your Resume",
+  "appLogoAlt": "App Logo",
+  "cvBuilder": "CV Builder",
+  "featurestitle": "Features",
+  "pricing": "Pricing",
+  "aboutUs": "About Us",
+  "getStarted": "Get Started",
+  "register": {
     "title": "Login/Signup",
     "googleButton": "Continue with Google account",
     "linkedinButton": "Continue with Linkedin",
@@ -29,7 +29,7 @@
   },
   "features": {
     "title": "Features designed to help you win your dream job",
-    "navtitle":"Features",
+    "navtitle": "Features",
     "createPersonalizedCVs": {
       "title": "Create Personalized CVs",
       "description": "Effortlessly import data and customize your CV based on your career goals"
@@ -114,7 +114,7 @@
     },
     "contactUs": {
       "title": "Contact us",
-      "email": "hello@relume.io"
+      "email": "⁠support@tobe.expert"
     },
     "followUs": {
       "title": "Follow Us",

@@ -10,7 +10,6 @@ import storage from 'redux-persist/lib/storage'; // Use AsyncStorage for React N
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['user'], // Add reducer keys that you want to persist
 };
 
 const persistedUserReducer = persistReducer(persistConfig, userReducer);

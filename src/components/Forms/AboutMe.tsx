@@ -9,9 +9,9 @@ interface AboutMeProps {
 const AboutMe: React.FC<AboutMeProps> = ({ aboutMe, onUpdate }) => {
   const [text, setText] = React.useState(aboutMe);
 
-  const handleSave = () => {
-    onUpdate(text); // Pass the updated text back to the parent
-  };
+  // const handleSave = () => {
+  //   onUpdate(text); // Pass the updated text back to the parent
+  // };
 
   return (
     <Box
@@ -25,7 +25,11 @@ const AboutMe: React.FC<AboutMeProps> = ({ aboutMe, onUpdate }) => {
         borderRadius: '16px',
       }}
     >
-      <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }} color="#2B2A44" mb={'10px'}>
+      <Typography
+        sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins', textAlign: 'left' }}
+        color="#2B2A44"
+        mb={'10px'}
+      >
         About Me
       </Typography>
       <TextField
@@ -35,7 +39,7 @@ const AboutMe: React.FC<AboutMeProps> = ({ aboutMe, onUpdate }) => {
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <Button
+      {/* <Button
         variant="contained"
         color="primary"
         sx={{
@@ -46,7 +50,7 @@ const AboutMe: React.FC<AboutMeProps> = ({ aboutMe, onUpdate }) => {
         onClick={handleSave}
       >
         Save Changes
-      </Button>
+      </Button> */}
     </Box>
   );
 };
