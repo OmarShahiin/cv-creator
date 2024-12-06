@@ -46,7 +46,7 @@ const Header = () => {
         justifyContent: 'space-between',
         fontFamily: 'Poppins',
         fontSize: 14,
-        maxWidth: 'xl',
+        maxWidth: '1400px',
         paddingInline: isMobile ? '17px' : '',
       }}
     >

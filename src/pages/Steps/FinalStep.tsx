@@ -1,34 +1,51 @@
+import { useState } from 'react';
+import { Stack, Button, useMediaQuery, useTheme, Typography, Box } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import { useLocation } from 'react-router-dom';
 import AboutMe from '@/components/Forms/AboutMe';
 import Education from '@/components/Forms/Education';
 import EmploymentHistory from '@/components/Forms/EmploymentHistory';
 import ResumeHeader from '@/components/Forms/Header';
 import PersonalDetailsForm from '@/components/Forms/PersonalDetailsForm';
 import MultiSelectTags from '@/components/Forms/Skills';
-import { Stack, Button, useMediaQuery, useTheme, Typography, Box } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description';
-import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 
 const FinalStep = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
 
   const [htmlPreviewVisible, setHtmlPreviewVisible] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const location = useLocation();
   const response = location.state?.response;
-  // Decode the base64 HTML content
   const decodedHtml = atob(response.file_base64);
-  console.log('decodedHtml', decodedHtml);
+
+  const skillsData: any = response.technical_skills.map((skill: any, index: number) => ({
+    id: index + 1,
+    label: skill.name,
+  }));
+  const initialSelectedSkills = skillsData.map((skill: any) => skill.id);
 
   const handlePreviewClick = () => {
     setHtmlPreviewVisible(!htmlPreviewVisible);
   };
 
-  const skillsData: any = response.technical_skills.map((skill: any, index: number) => ({
-    id: index + 1, // Assign a unique ID to each skill
-    label: skill.name,
-  }));
-  const initialSelectedSkills = skillsData.map((skill: any) => skill.id);
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Simulate an API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setHasChanges(false); // Hide button after success
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleChange = () => {
+    setHasChanges(true); // Mark as changed
+  };
 
   return (
     <Stack direction={isMobile ? 'column' : 'row'} width={'100%'} minHeight={'92vh'}>
@@ -51,23 +68,11 @@ const FinalStep = () => {
             phone: response.phone,
             country: response.country,
             city: response.city,
-            uploadImage: response.photo, // Assuming `photo` contains the image URL
+            uploadImage: response.photo,
           }}
         />
-        <AboutMe
-          aboutMe={response.summary}
-          onUpdate={(updatedAboutMe) => {
-            console.log('Updated About Me:', updatedAboutMe);
-          }}
-        />
-        <EmploymentHistory
-          initialData={response.work_experiences}
-          onUpdate={(updatedAboutMe) => {
-            console.log('Updated About Me:', updatedAboutMe);
-            // Send the updated summary to the backend
-            // Example: axios.put('/api/update-summary', { summary: updatedAboutMe });
-          }}
-        />
+        <AboutMe aboutMe={response.summary} onUpdate={handleChange} />
+        <EmploymentHistory initialData={response.work_experiences} onUpdate={handleChange} />
         <Education
           initialData={[
             {
@@ -80,38 +85,31 @@ const FinalStep = () => {
               description: 'Graduated with a focus in front-end development.',
             },
           ]}
-          onUpdate={(updatedData) => {
-            console.log('Updated Education Data:', updatedData);
-            // Handle the updated education data here (e.g., API request)
-          }}
+          onUpdate={handleChange}
         />
         <MultiSelectTags
-          initialSelectedSkills={initialSelectedSkills} // Example pre-selected IDs
+          initialSelectedSkills={initialSelectedSkills}
           skillsData={skillsData}
-          onUpdate={(updatedData) => {
-            console.log('Updated Education Data:', updatedData);
-            // Handle the updated education data here (e.g., API request)
-          }}
-        />{' '}
+          onUpdate={handleChange}
+        />
       </Stack>
 
       {isMobile ? undefined : (
         <Stack flex={1} sx={{ backgroundColor: '#2B2A44', padding: '16px', alignItems: 'center' }}>
-          {
-            <Box
-              sx={{
-                height: '827px',
-                width: '593px',
-                backgroundColor: '#ffffff',
-                overflow: 'auto',
-                borderRadius: '8px',
-              }}
-              dangerouslySetInnerHTML={{ __html: decodedHtml }} // Render the HTML
-            />
-          }
+          <Box
+            sx={{
+              height: '827px',
+              width: '593px',
+              backgroundColor: '#ffffff',
+              overflow: 'auto',
+              borderRadius: '8px',
+            }}
+            dangerouslySetInnerHTML={{ __html: decodedHtml }}
+          />
         </Stack>
       )}
 
+      {/* Preview Button for Mobile */}
       {isMobile && (
         <Button
           variant="contained"
@@ -145,6 +143,37 @@ const FinalStep = () => {
           >
             {htmlPreviewVisible ? 'Hide Template' : 'Preview the Template'}
           </Typography>
+        </Button>
+      )}
+
+      {/* Floating Save Button */}
+      {hasChanges && (
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{
+            position: 'fixed',
+            bottom: isMobile ? 80 : 20,
+            right: 20,
+            zIndex: 1000,
+            textTransform: 'none',
+            borderRadius: '50%',
+            padding: '16px',
+            width: '56px',
+            height: '56px',
+            minWidth: 'unset',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: isSaving ? 'gray' : 'rgba(43, 42, 68, 1)',
+            '&:hover': {
+              backgroundColor: isSaving ? 'gray' : 'rgba(43, 42, 68, 0.9)',
+            },
+          }}
+          onClick={handleSave}
+          disabled={isSaving}
+        >
+          {isSaving ? '...' : <DescriptionIcon sx={{ color: 'white' }} />}
         </Button>
       )}
     </Stack>
