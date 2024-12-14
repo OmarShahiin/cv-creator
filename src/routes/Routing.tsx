@@ -25,7 +25,7 @@ const Routing = () => {
         <Route path="Name" element={<NameForm />} />
         <Route path="final-step" element={<FinalStep />} />
       </Route>
-      <Route  path="/linkedin" element={<LinkedInCallback />} />
+      <Route path="/linkedin" element={<LinkedInCallback />} />
     </Routes>
   );
 };

@@ -8,16 +8,17 @@ import EmploymentHistory from '@/components/Forms/EmploymentHistory';
 import ResumeHeader from '@/components/Forms/Header';
 import PersonalDetailsForm from '@/components/Forms/PersonalDetailsForm';
 import MultiSelectTags from '@/components/Forms/Skills';
-
+import response from './response.json';
 const FinalStep = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
+  console.log('response', response);
 
   const [htmlPreviewVisible, setHtmlPreviewVisible] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const location = useLocation();
-  const response = location.state?.response;
+  // const location = useLocation();
+  // const response = location.state?.response;
   const decodedHtml = atob(response.file_base64);
 
   const skillsData: any = response.technical_skills.map((skill: any, index: number) => ({
@@ -53,49 +54,66 @@ const FinalStep = () => {
         direction={'column'}
         sx={{
           justifyContent: 'flex-start',
-          paddingInline: isMobile ? '0px' : '78px',
+          // paddingInline: isMobile ? '0px' : '78px',
           paddingBlock: '50px',
           rowGap: '12px',
           paddingBottom: isMobile ? '100px' : '100px',
         }}
         flex={1}
       >
-        <ResumeHeader name={response.full_name} score={20} improvement={25} />
-        <PersonalDetailsForm
-          initialData={{
-            fullName: response.full_name,
-            email: response.email,
-            phone: response.phone,
-            country: response.country,
-            city: response.city,
-            uploadImage: response.photo,
+        <Box
+          sx={{
+            paddingInline: isMobile ? '0px' : '44px',
+            display: 'flex',
+            flexDirection: 'column',
+            rowGap: '12px',
           }}
-        />
-        <AboutMe aboutMe={response.summary} onUpdate={handleChange} />
-        <EmploymentHistory initialData={response.work_experiences} onUpdate={handleChange} />
-        <Education
-          initialData={[
-            {
-              id: 1,
-              School: 'Ain Shams University',
-              Degree: 'Bachelor of Science',
-              startDate: '2015-09',
-              endDate: '2019-06',
-              city: 'Cairo',
-              description: 'Graduated with a focus in front-end development.',
-            },
-          ]}
-          onUpdate={handleChange}
-        />
-        <MultiSelectTags
-          initialSelectedSkills={initialSelectedSkills}
-          skillsData={skillsData}
-          onUpdate={handleChange}
-        />
+        >
+          <ResumeHeader name={response.full_name} score={20} improvement={25} />
+          <PersonalDetailsForm
+            initialData={{
+              fullName: response.full_name,
+              email: response.email,
+              phone: response.phone,
+              country: response.country,
+              city: response.city,
+              uploadImage: '',
+            }}
+          />
+          <AboutMe aboutMe={response.summary} onUpdate={handleChange} />
+          <EmploymentHistory initialData={response.work_experiences} onUpdate={handleChange} />
+
+          <Education
+            initialData={[
+              {
+                id: 1,
+                School: 'Ain Shams University',
+                Degree: 'Bachelor of Science',
+                startDate: '2015-09',
+                endDate: '2019-06',
+                city: 'Cairo',
+                description: 'Graduated with a focus in front-end development.',
+              },
+            ]}
+            onUpdate={handleChange}
+          />
+          <MultiSelectTags
+            initialSelectedSkills={initialSelectedSkills}
+            skillsData={skillsData}
+            onUpdate={handleChange}
+          />
+        </Box>
       </Stack>
 
       {isMobile ? undefined : (
         <Stack flex={1} sx={{ backgroundColor: '#2B2A44', padding: '16px', alignItems: 'center' }}>
+          <Box
+            sx={{
+              width: '593px',
+              height: '100px',
+              backgroundColor: 'red',
+            }}
+          ></Box>
           <Box
             sx={{
               height: '827px',
@@ -154,7 +172,7 @@ const FinalStep = () => {
           sx={{
             position: 'fixed',
             bottom: isMobile ? 80 : 20,
-            right: 20,
+            right: 'calc(50% - 12px)',
             zIndex: 1000,
             textTransform: 'none',
             borderRadius: '50%',
@@ -165,7 +183,7 @@ const FinalStep = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: isSaving ? 'gray' : 'rgba(43, 42, 68, 1)',
+            backgroundColor: isSaving ? 'gray' : 'rgba(43, 200, 68, 1)',
             '&:hover': {
               backgroundColor: isSaving ? 'gray' : 'rgba(43, 42, 68, 0.9)',
             },

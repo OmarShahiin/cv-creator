@@ -9,18 +9,24 @@ import {
   Box,
   Divider,
   InputLabel,
+  IconButton,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { arrayMove } from '@dnd-kit/sortable';
+import { SortableItem } from './SortableItem';
 
 interface EmploymentEntry {
   id: number;
   company: string;
   job_title: string;
-  employer: string;
   start_date: string;
-  end_date: string;
+  end_date: string | null;
   location: string;
   description: string;
 }
@@ -33,22 +39,38 @@ interface EmploymentHistoryProps {
 const EmploymentSchema = Yup.object().shape({
   employmentEntries: Yup.array().of(
     Yup.object().shape({
-      job_title: Yup.string().required('Job title is required'),
-      company: Yup.string().required('Employer is required'),
-      start_date: Yup.string().required('Start date is required'),
-      end_date: Yup.string().required('End date is required'),
-      location: Yup.string().required('City is required'),
+      company: Yup.string().required('Company is required'),
+      job_title: Yup.string().required('Job Title is required'),
+      start_date: Yup.string().required('Start Date is required'),
+      end_date: Yup.string().required('End Date is required'),
+      location: Yup.string().required('Location is required'),
       description: Yup.string().required('Description is required'),
     }),
   ),
 });
 
 const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUpdate }) => {
-  console.log('initialData', initialData);
-  const [expanded, setExpanded] = useState<number[]>([]); // Array to track expanded states
+  const [expanded, setExpanded] = useState<number | false>(false);
+  const [isReorderEnabled, setIsReorderEnabled] = useState(false);
 
-  const handleAccordionChange = (id: number) => {
-    setExpanded((prev) => (prev.includes(id) ? prev.filter((expandedId) => expandedId !== id) : [...prev, id]));
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const handleAccordionChange = (id: number) => (_: React.SyntheticEvent, isExpanded: boolean) => {
+    if (!isReorderEnabled) {
+      setExpanded(isExpanded ? id : false);
+    }
+  };
+
+  const handleDragEnd = (event: any, values: any, setFieldValue: any) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = values.employmentEntries.findIndex((entry: any) => entry.id === active.id);
+      const newIndex = values.employmentEntries.findIndex((entry: any) => entry.id === over.id);
+
+      const newItems = arrayMove(values.employmentEntries, oldIndex, newIndex);
+      setFieldValue('employmentEntries', newItems);
+    }
   };
 
   return (
@@ -66,144 +88,172 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
             sx={{
               backgroundColor: '#fff',
               borderRadius: '16px',
-              width: '100%',
             }}
           >
-            <Typography sx={{ fontSize: '18px', textAlign: 'left', fontWeight: '600', fontFamily: 'Poppins' }}>
-              Employment History
-            </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }}>
+                Employment History
+              </Typography>
+              <Box>
+                rearrage
+                <IconButton onClick={() => setIsReorderEnabled(!isReorderEnabled)}>
+                  <SwapVertIcon color={isReorderEnabled ? 'primary' : 'inherit'} />
+                </IconButton>
+              </Box>
+            </Box>
             <FieldArray name="employmentEntries">
-              {({ push }) => (
-                <Box>
-                  {values.employmentEntries.map((entry, index) => (
-                    <Accordion
-                      key={index}
-                      expanded={expanded.includes(index)}
-                      onChange={() => handleAccordionChange(index)}
-                      sx={{
-                        border: '1px solid #ccc',
-                        borderRadius: '8px !important',
-                        marginBlock: '16px !important',
-                        boxShadow: 'none !important',
-                        '&.Mui-expanded': {
-                          borderTopWidth: '1px !important',
-                          marginBlock: '16px !important',
-                          boxShadow: 'none !important',
-                        },
-                        backgroundColor: '#FFF',
-                      }}
-                    >
-                      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography
+              {({ push, remove }) => (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={(event) => handleDragEnd(event, values, setFieldValue)}
+                >
+                  <SortableContext
+                    items={values.employmentEntries.map((entry) => entry.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {values.employmentEntries.map((entry, index) => (
+                      <SortableItem key={entry.id} id={entry.id} isReorderEnabled={isReorderEnabled}>
+                        <Box
                           sx={{
-                            fontSize: '14px',
-                            fontWeight: '500',
-                            fontFamily: 'Poppins',
-                            color: '#2B2A44',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            width: '100%',
+                            alignItems: 'flex-start',
+                            marginBottom: '16px',
                           }}
                         >
-                          {entry.company || 'New Entry'}
-                        </Typography>
-                      </AccordionSummary>
-                      {expanded.includes(index) && (
-                        <Divider
-                          variant="middle"
-                          sx={{
-                            height: '1px',
-                            marginBottom: '16px',
-                            backgroundColor: '#EFEAEA',
-                            borderRadius: '4px',
-                          }}
-                        />
-                      )}
-                      <AccordionDetails>
-                        <Box display="flex" flexDirection="column" gap={2}>
-                          <Box display="flex" gap={2}>
-                            <Box flex={1}>
-                              <InputLabel>Job Title</InputLabel>
-                              <Field
-                                size="small"
-                                name={`employmentEntries[${index}].job_title`}
-                                as={TextField}
-                                placeholder="Job title"
-                                variant="outlined"
-                                fullWidth
-                                sx={{ borderRadius: '8px' }}
-                              />
-                            </Box>
-                            <Box flex={1}>
-                              <InputLabel>Employer</InputLabel>
-                              <Field
-                                size="small"
-                                name={`employmentEntries[${index}].company`}
-                                as={TextField}
-                                placeholder="Employer"
-                                variant="outlined"
-                                fullWidth
-                                sx={{ borderRadius: '8px' }}
-                                onChange={(e: any) => {
-                                  const employerValue = e.target.value;
-                                  setFieldValue(`employmentEntries[${index}].company`, employerValue);
+                          <Accordion
+                            expanded={expanded === entry.id}
+                            onChange={handleAccordionChange(entry.id)}
+                            sx={{
+                              border: '1px solid #ccc',
+                              borderRadius: '8px !important',
+                              boxShadow: 'none !important',
+                              backgroundColor: '#FFF',
+                              flex: 1,
+                            }}
+                          >
+                            <AccordionSummary
+                              expandIcon={<ExpandMoreIcon />}
+                              sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: '14px',
+                                  fontWeight: '500',
+                                  fontFamily: 'Poppins',
+                                  color: '#2B2A44',
+                                  flexGrow: 1,
                                 }}
-                              />
-                            </Box>
-                          </Box>
-                          <Box display="flex" gap={2}>
-                            <Box flex={1}>
-                              <InputLabel>Start Date</InputLabel>
-                              <Field
-                                size="small"
-                                name={`employmentEntries[${index}].start_date`}
-                                as={TextField}
-                                placeholder="MM/YY"
-                                variant="outlined"
-                                fullWidth
-                                sx={{ borderRadius: '8px' }}
-                              />
-                            </Box>
-                            <Box flex={1}>
-                              <InputLabel>End Date</InputLabel>
-                              <Field
-                                size="small"
-                                name={`employmentEntries[${index}].endDate`}
-                                as={TextField}
-                                placeholder="MM/YY"
-                                variant="outlined"
-                                fullWidth
-                                sx={{ borderRadius: '8px' }}
-                              />
-                            </Box>
-                          </Box>
-                          <Box>
-                            <InputLabel>City</InputLabel>
-                            <Field
-                              size="small"
-                              name={`employmentEntries[${index}].location`}
-                              as={TextField}
-                              placeholder="City"
-                              variant="outlined"
-                              fullWidth
-                              sx={{ borderRadius: '8px' }}
-                            />
-                          </Box>
-                          <Box>
-                            <InputLabel>Description</InputLabel>
-                            <Field
-                              size="small"
-                              name={`employmentEntries[${index}].description`}
-                              as={TextField}
-                              placeholder="Description"
-                              variant="outlined"
-                              fullWidth
-                              multiline
-                              rows={4}
-                              sx={{ borderRadius: '8px' }}
-                            />
-                          </Box>
+                              >
+                                {entry.company || 'New Entry'}
+                              </Typography>
+                            </AccordionSummary>
+                            <Divider variant="middle" />
+                            <AccordionDetails>
+                              <Box display="flex" flexDirection="column" gap={2}>
+                                <Box display="flex" gap={2}>
+                                  <Box flex={1}>
+                                    <InputLabel>Company</InputLabel>
+                                    <Field
+                                      size="small"
+                                      name={`employmentEntries[${index}].company`}
+                                      as={TextField}
+                                      placeholder="Company"
+                                      variant="outlined"
+                                      fullWidth
+                                      sx={{ borderRadius: '8px' }}
+                                    />
+                                  </Box>
+                                  <Box flex={1}>
+                                    <InputLabel>Job Title</InputLabel>
+                                    <Field
+                                      size="small"
+                                      name={`employmentEntries[${index}].job_title`}
+                                      as={TextField}
+                                      placeholder="Job Title"
+                                      variant="outlined"
+                                      fullWidth
+                                      sx={{ borderRadius: '8px' }}
+                                    />
+                                  </Box>
+                                </Box>
+                                <Box display="flex" gap={2}>
+                                  <Box flex={1}>
+                                    <InputLabel>Start Date</InputLabel>
+                                    <Field
+                                      size="small"
+                                      name={`employmentEntries[${index}].start_date`}
+                                      as={TextField}
+                                      placeholder="MM/YY"
+                                      variant="outlined"
+                                      fullWidth
+                                      sx={{ borderRadius: '8px' }}
+                                    />
+                                  </Box>
+                                  <Box flex={1}>
+                                    <InputLabel>End Date</InputLabel>
+                                    <Field
+                                      size="small"
+                                      name={`employmentEntries[${index}].end_date`}
+                                      as={TextField}
+                                      placeholder="MM/YY"
+                                      variant="outlined"
+                                      fullWidth
+                                      sx={{ borderRadius: '8px' }}
+                                    />
+                                  </Box>
+                                </Box>
+                                <Box>
+                                  <InputLabel>Location</InputLabel>
+                                  <Field
+                                    size="small"
+                                    name={`employmentEntries[${index}].location`}
+                                    as={TextField}
+                                    placeholder="Location"
+                                    variant="outlined"
+                                    fullWidth
+                                    sx={{ borderRadius: '8px' }}
+                                  />
+                                </Box>
+                                <Box>
+                                  <InputLabel>Description</InputLabel>
+                                  <Field
+                                    size="small"
+                                    name={`employmentEntries[${index}].description`}
+                                    as={TextField}
+                                    placeholder="Description"
+                                    variant="outlined"
+                                    fullWidth
+                                    multiline
+                                    rows={4}
+                                    sx={{ borderRadius: '8px' }}
+                                  />
+                                </Box>
+                              </Box>
+                            </AccordionDetails>
+                          </Accordion>
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent toggling accordion
+                              remove(index); // Remove the entry
+                            }}
+                            sx={{ marginLeft: '8px', marginTop: '5px' }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                         </Box>
-                      </AccordionDetails>
-                    </Accordion>
-                  ))}
+                      </SortableItem>
+                    ))}
+                  </SortableContext>
                   <Box
                     sx={{
                       display: 'flex',
@@ -215,9 +265,8 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                       onClick={() =>
                         push({
                           id: values.employmentEntries.length + 1,
-                          companyName: '',
-                          jobTitle: '',
-                          employer: '',
+                          School: '',
+                          Degree: '',
                           startDate: '',
                           endDate: '',
                           city: '',
@@ -237,7 +286,7 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                       + Add More
                     </Button>
                   </Box>
-                </Box>
+                </DndContext>
               )}
             </FieldArray>
           </Box>

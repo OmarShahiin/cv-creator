@@ -12,14 +12,14 @@ import {
   IconButton,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DragHandleIcon from '@mui/icons-material/DragHandle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { arrayMove, useSortable } from '@dnd-kit/sortable';
+import { arrayMove } from '@dnd-kit/sortable';
+import { SortableItem } from './SortableItem';
 
 interface EducationEntry {
   id: number;
@@ -48,29 +48,6 @@ const EducationSchema = Yup.object().shape({
     }),
   ),
 });
-
-const SortableItem = ({
-  id,
-  children,
-  isReorderEnabled,
-}: {
-  id: number;
-  children: React.ReactNode;
-  isReorderEnabled: boolean;
-}) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-  };
-
-  return (
-    <Box ref={setNodeRef} style={style} {...(isReorderEnabled ? { ...attributes, ...listeners } : {})}>
-      {children}
-    </Box>
-  );
-};
 
 const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
   const [expanded, setExpanded] = useState<number | false>(false);
@@ -176,6 +153,8 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                                 {entry.School || 'New Entry'}
                               </Typography>
                             </AccordionSummary>
+                            <Divider variant="middle" />
+
                             <AccordionDetails>
                               <Box display="flex" flexDirection="column" gap={2}>
                                 <Box display="flex" gap={2}>
