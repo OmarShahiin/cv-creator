@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, TextField, Typography, Button } from '@mui/material';
+import { Box, TextField, Typography } from '@mui/material';
 
 interface AboutMeProps {
   aboutMe: string;

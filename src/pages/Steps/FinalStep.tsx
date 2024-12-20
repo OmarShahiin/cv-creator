@@ -1,24 +1,24 @@
 import { useState } from 'react';
 import { Stack, Button, useMediaQuery, useTheme, Typography, Box } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AboutMe from '@/components/Forms/AboutMe';
 import Education from '@/components/Forms/Education';
 import EmploymentHistory from '@/components/Forms/EmploymentHistory';
 import ResumeHeader from '@/components/Forms/Header';
 import PersonalDetailsForm from '@/components/Forms/PersonalDetailsForm';
 import MultiSelectTags from '@/components/Forms/Skills';
-import response from './response.json';
 const FinalStep = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
-  console.log('response', response);
 
   const [htmlPreviewVisible, setHtmlPreviewVisible] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  // const location = useLocation();
-  // const response = location.state?.response;
+  const location = useLocation();
+  const response = location.state?.response;
   const decodedHtml = atob(response.file_base64);
 
   const skillsData: any = response.technical_skills.map((skill: any, index: number) => ({
@@ -111,9 +111,43 @@ const FinalStep = () => {
             sx={{
               width: '593px',
               height: '100px',
-              backgroundColor: 'red',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
-          ></Box>
+          >
+            <Button
+              disableRipple
+              disableFocusRipple
+              disableElevation
+              sx={{
+                height: '32px',
+                ':hover': {
+                  backgroundColor: '#0e41fc',
+                },
+              }}
+              variant="contained"
+            >
+              change template
+            </Button>
+            <Button
+              disableRipple
+              disableFocusRipple
+              disableElevation
+              sx={{
+                height: '32px',
+                ':hover': {
+                  backgroundColor: '#0e41fc',
+                },
+              }}
+              variant="contained"
+              onClick={() => {
+                navigate('/create/payment');
+              }}
+            >
+              download{' '}
+            </Button>
+          </Box>
           <Box
             sx={{
               height: '827px',

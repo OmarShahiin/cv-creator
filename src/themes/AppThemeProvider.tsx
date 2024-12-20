@@ -91,7 +91,7 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
       palette: {
         mode: 'light',
         primary: {
-          main: 'rgba(14, 65, 252, 1)',
+          main: '#0E41FC',
         },
         secondary: {
           main: '#9DF3C4',

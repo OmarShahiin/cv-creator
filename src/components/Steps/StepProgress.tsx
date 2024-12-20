@@ -32,7 +32,7 @@ export const StepProgress: React.FC<StepProgressProps> = ({ step, totalSteps, ti
       const res = await generateCV(body).unwrap();
       console.log('res', res);
       // const result = res.json();
-      navigate('/create/final-step',{ state: { response : res} });
+      navigate('/final-step', { state: { response: res } });
       // Executes the mutation and waits for the response
     } catch (err) {
       console.error('Error generating CV:', err);

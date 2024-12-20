@@ -1,4 +1,4 @@
-import { Box, Button,  Link, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Link, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
 import side from '@/assets/sideSvg.svg';
 import Applogo from '@/assets/appLogo.svg';
 import { useState } from 'react';
@@ -28,7 +28,7 @@ export const OTP = () => {
         newOtp[i] = pastedData[i];
       }
       setOtp(newOtp);
-  
+
       // Focus the next empty field
       const firstEmptyIndex = newOtp.findIndex((val) => val === '');
       if (firstEmptyIndex !== -1) {
@@ -36,22 +36,22 @@ export const OTP = () => {
       }
     }
   };
-  
+
   const handleChange = (e: any, index: number) => {
     const value = e.target.value;
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-  
+
       // Move to the next input automatically
       if (value && index < otp.length - 1) {
         document?.getElementById(`otp-${index + 1}`)?.focus();
       }
     }
   };
-  
-  const handleKeyDown = (e:any, index: number) => {
+
+  const handleKeyDown = (e: any, index: number) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       // Move focus to the previous input if backspace is pressed and the current field is empty
       document?.getElementById(`otp-${index - 1}`)?.focus();
@@ -59,11 +59,9 @@ export const OTP = () => {
   };
 
   const handleResendCode = async () => {
-
     try {
       await resendOtp({ email }).unwrap();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleSubmit = async () => {
@@ -74,16 +72,14 @@ export const OTP = () => {
     }
 
     try {
-      console.log('email', email)
-      const datares: any = await validateOtp({ email, otp: otp.toString().replace(/,/g, '')  }).unwrap();
-      console.log('datares', datares);
+      const dataRes: any = await validateOtp({ email, otp: otp.toString().replace(/,/g, '') }).unwrap();
       dispatch(
         setCredentials({
-          accessToken: datares.access,
-          refreshToken: datares.refresh,
+          accessToken: dataRes.access,
+          refreshToken: dataRes.refresh,
         }),
       );
-      alert('OTP validated successfully');
+
       navigate('/home'); // Navigate to the home screen or desired destination
     } catch (error) {
       console.error('Error validating OTP:', error);
@@ -144,42 +140,42 @@ export const OTP = () => {
             <Box display="flex" justifyContent="space-between" columnGap={2} marginBlock={2} width="100%">
               {otp.map((digit, index) => (
                 <TextField
-                key={index}
-                id={`otp-${index}`}
-                variant="outlined"
-                value={digit}
-                onChange={(e) => handleChange(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                onPaste={handlePaste}
-                inputProps={{
-                  maxLength: 1,
-                  style: { textAlign: 'center' },
-                }}
-                sx={{
-                  width: '60px',
-                  height: '47px',
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '8px',
-                  },
-                }}
-              />
+                  key={index}
+                  id={`otp-${index}`}
+                  variant="outlined"
+                  value={digit}
+                  onChange={(e) => handleChange(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  onPaste={handlePaste}
+                  inputProps={{
+                    maxLength: 1,
+                    style: { textAlign: 'center' },
+                  }}
+                  sx={{
+                    width: '60px',
+                    height: '47px',
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '8px',
+                    },
+                  }}
+                />
               ))}
             </Box>
             <Button
-            disableRipple
-            disableFocusRipple
+              disableRipple
+              disableFocusRipple
               onClick={handleResendCode}
               color="primary"
-              sx={{ 
-                marginRight:"auto",
-                cursor: isResending ? 'not-allowed' : 'pointer' ,
-                "&:hover": {
-                  bgcolor: "#FFF",
+              sx={{
+                marginRight: 'auto',
+                cursor: isResending ? 'not-allowed' : 'pointer',
+                '&:hover': {
+                  bgcolor: '#FFF',
                   opacity: isResending ? 0.5 : 1,
-                  
-              }}}
-              variant='text'
->
+                },
+              }}
+              variant="text"
+            >
               {isResending ? 'Resending...' : 'Send code again'}
             </Button>
 
