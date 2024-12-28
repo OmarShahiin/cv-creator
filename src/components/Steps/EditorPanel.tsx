@@ -56,12 +56,13 @@ const EditorPanel: FC<EditorPanelProps> = ({ response, isMobile, handleChange, i
         <ResumeHeader name={response.full_name} sections={sections} onSectionSelect={handleSectionSelect} />
         <PersonalDetailsForm
           initialData={{
-            fullName: response.full_name,
+            full_name: response.full_name,
             email: response.email,
             phone: response.phone,
             country: response.country,
             city: response.city,
-            uploadImage: '',
+            photo: '',
+            job_title: response.job_title,
           }}
           onUpdate={handleChange}
         />

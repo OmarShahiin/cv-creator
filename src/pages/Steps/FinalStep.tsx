@@ -6,13 +6,12 @@ import PreviewPanel from '@/components/Steps/PreviewPanel';
 import MobilePreviewButton from '@/components/Steps/MobilePreviewButton';
 import SaveButton from '@/components/Steps/SaveButton';
 import { useUpdateCvMutation } from '@/features/cvGenerator/generateCv';
-import responsess from './response.json';
 const FinalStep = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
   const location = useLocation();
 
-  const [response, setResponse] = useState(responsess);
+  const [response, setResponse] = useState(location.state?.response);
   if (!response) return <Navigate to="/" replace />;
 
   const decodedHtml = atob(response?.file_base64 ?? '');

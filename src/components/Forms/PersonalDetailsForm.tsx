@@ -6,17 +6,23 @@ import Grid from '@mui/material/Grid2';
 
 interface PersonalDetailsFormProps {
   initialData: {
-    fullName: string;
+    full_name: string;
     email: string;
     phone: string;
     country: string;
     city: string;
-    uploadImage?: File | string;
+    photo?: string;
+    job_title: string;
   };
   onUpdate: (values: any) => void;
 }
 
 const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, onUpdate }) => {
+  const handleChangeAndUpdate = (e: any, setFieldValue: any) => {
+    const { name, value } = e.target;
+    setFieldValue(name, value);
+    onUpdate({ [name]: value });
+  };
   return (
     <Box
       sx={{
@@ -30,19 +36,19 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
     >
       <Formik
         initialValues={{
-          fullName: initialData.fullName || '',
+          full_name: initialData.full_name || '',
           email: initialData.email || '',
           phone: initialData.phone || '',
           country: initialData.country || '',
           city: initialData.city || '',
-          uploadImage: initialData.uploadImage || '',
+          photo: initialData.photo || '',
         }}
         onSubmit={(values) => {
           console.log('values', values);
           // onUpdate(values);
         }}
       >
-        {({ setFieldValue }) => (
+        {({ setFieldValue, values }) => (
           <Form>
             <Typography
               sx={{
@@ -76,8 +82,9 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                 </InputLabel>
                 <Field
                   size="small"
+                  onChange={(e: any) => handleChangeAndUpdate(e, setFieldValue)}
                   component={TextField}
-                  name="fullName"
+                  name="full_name"
                   placeholder="Full Name"
                   fullWidth
                   sx={{ borderRadius: '8px' }}
@@ -97,7 +104,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                 <Grid container justifyContent="flex-start" alignItems="center" direction="row" columnGap={2}>
                   <Avatar
                     alt="Profile Image"
-                    src={typeof initialData.uploadImage === 'string' ? initialData.uploadImage : undefined}
+                    src={values?.photo ? values?.photo : undefined}
                     sx={{ width: '47px', height: '47px', borderRadius: '10px' }}
                   />
                   <input
@@ -108,7 +115,15 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                     onChange={(event) => {
                       const file = event.target.files?.[0];
                       if (file) {
-                        setFieldValue('uploadImage', file);
+                        let reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = function () {
+                          setFieldValue('photo', reader.result);
+                          onUpdate({ photo: reader.result });
+                        };
+                        reader.onerror = function (error) {
+                          console.log('Error: ', error);
+                        };
                       }
                     }}
                   />
