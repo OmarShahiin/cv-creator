@@ -13,6 +13,7 @@ const TitleSection = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
   const navigation = useNavigate();
+  const user = localStorage.getItem('user') || null;
 
   return (
     <Box
@@ -106,7 +107,7 @@ const TitleSection = () => {
         {/* Button */}
         <Button
           onClick={() => {
-            navigation('/register');
+            !user ? navigation('/register') : navigation('/home');
           }}
           sx={{
             // position: 'absolute',

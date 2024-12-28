@@ -5,6 +5,7 @@ import userReducer from '@/features/user/userSlice';
 import { counterReducer } from '@/features/counterSlice';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Use AsyncStorage for React Native
+import loadingReducer   from '@/features/loading/loadingSlice';
 
 // Configure persistence for reducers
 const persistConfig = {
@@ -18,6 +19,7 @@ const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     counter: counterReducer,
+    loading:loadingReducer,
     user: persistedUserReducer, // Add persisted reducer
   },
   middleware: (getDefaultMiddleware) =>

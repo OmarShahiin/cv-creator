@@ -13,6 +13,7 @@ const CVCarousel = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigation = useNavigate();
+  const user = localStorage.getItem('user') || null;
 
   return (
     <Box
@@ -96,7 +97,7 @@ const CVCarousel = () => {
         </IconButton>
         <Button
           onClick={() => {
-            navigation('/register');
+            !user ? navigation('/register') : navigation('/home');
           }}
           variant="contained"
           color="primary"

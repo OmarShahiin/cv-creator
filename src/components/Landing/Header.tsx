@@ -1,39 +1,70 @@
-import React, { useEffect } from 'react';
-import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Button, useTheme, useMediaQuery, Popover, ButtonBase } from '@mui/material';
 import EnAppLogo from '@/assets/appLogo.svg';
 import arAppLogo from '@/assets/appLogoAr.svg';
 import TemporaryDrawer from './Drawer';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/store';
-import { setLanguage } from '@/features/user/userSlice';
+import { logout, setLanguage } from '@/features/user/userSlice'; // <-- Import logout
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { useJwt } from 'react-jwt';
 import PersonIcon from '@mui/icons-material/Person';
+import { useAuth } from '@/context/AuthContext';
+
 const Header = () => {
   const { t } = useTranslation();
-  const [open, setOpen] = React.useState(false);
-  const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigation = useNavigate();
   const dispatch = useAppDispatch();
+  const { logout: userAuthLogout } = useAuth();
+  // Language
   const language = useAppSelector((state) => state.user.language);
-  const user = useAppSelector((state) => state.user);
-  const { decodedToken, isExpired } = useJwt(user.accessToken ?? '');
 
+  // Grab user info from store
+  const { accessToken } = useAppSelector((state) => state.user);
+
+  // JWT decode
+  const { decodedToken, isExpired } = useJwt(accessToken ?? '');
+
+  // Drawer state
+  const [open, setOpen] = useState(false);
+  const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
+
+  // Popover state
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handlePersonClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openPopover = Boolean(anchorEl);
+  const popoverId = openPopover ? 'user-popover' : undefined;
+
+  // Handle language switch
   const handleChangeLanguage = () => {
     const newLanguage = language === 'en' ? 'ar' : 'en';
     dispatch(setLanguage(newLanguage));
     i18n.changeLanguage(newLanguage);
-
-    // Change page direction
     document.documentElement.setAttribute('dir', newLanguage === 'en' ? 'ltr' : 'rtl');
   };
 
   useEffect(() => {
     document.documentElement.setAttribute('dir', language === 'en' ? 'ltr' : 'rtl');
   }, [language]);
+
+  // Handle logout
+  const handleLogout = () => {
+    userAuthLogout();
+    dispatch(logout());
+    handlePopoverClose();
+    // Optionally navigate the user to a public route
+    navigation('/');
+  };
 
   return (
     <Box
@@ -51,7 +82,7 @@ const Header = () => {
       }}
     >
       {/* Logo */}
-      <Box flex={0.5} display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+      <Box flex={0.5} display="flex" flexDirection="row" justifyContent="center">
         <Box
           onClick={() => navigation('/')}
           component="img"
@@ -67,7 +98,7 @@ const Header = () => {
         />
       </Box>
 
-      {/* Navigation Links */}
+      {/* Navigation Links (Optional, currently empty array) */}
       {!isMobile && (
         <Box
           sx={{
@@ -78,32 +109,13 @@ const Header = () => {
             gap: '15px',
           }}
         >
-          {[].map((key, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '15px',
-              }}
-            >
-              <Typography sx={{ lineHeight: '150%', color: '#2B2A44', cursor: 'pointer' }}>{t(key)}</Typography>
-              {index < 3 && (
-                <Box
-                  sx={{
-                    width: 3,
-                    height: 3,
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.26)',
-                  }}
-                />
-              )}
-            </Box>
-          ))}
+          {/* Example if you had nav links: 
+            ['home','about','contact'].map(...)
+          */}
         </Box>
       )}
 
-      {/* Language Switch and Profile or Get Started */}
+      {/* Language Switch & Profile / Get Started */}
       <Box
         sx={{
           flex: 0.5,
@@ -114,23 +126,58 @@ const Header = () => {
           justifyContent: 'flex-end',
         }}
       >
-        {!isMobile && (
-          <Button onClick={handleChangeLanguage} sx={{ display: { md: 'inline-flex' } }}>
-            {language === 'en' ? 'AR' : 'EN'}
-          </Button>
-        )}
+        {/* Language Switch (hidden on mobile if you choose) */}
+        {!isMobile && <Button onClick={handleChangeLanguage}>{language === 'en' ? 'AR' : 'EN'}</Button>}
+
+        {/* If token is valid, show person icon & email; otherwise, show "Get Started" button */}
         {decodedToken && !isExpired ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <PersonIcon
+          <Box display="flex" alignItems="center" gap={1}>
+            <ButtonBase onClick={handlePersonClick}>
+              <PersonIcon
+                aria-describedby={popoverId}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                }}
+              />
+            </ButtonBase>
+
+            <Typography
+              aria-describedby={popoverId}
+              onClick={handlePersonClick}
               sx={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                fontWeight: 400,
+                color: '#2B2A44',
+                cursor: 'pointer',
               }}
-            />
-            <Typography sx={{ fontFamily: 'Poppins', fontSize: 14, fontWeight: 400, color: '#2B2A44' }}>
-              {'user@gmail.com'}
+            >
+              {'user@example.com'}
             </Typography>
+
+            {/* Popover */}
+            <Popover
+              id={popoverId}
+              open={openPopover}
+              anchorEl={anchorEl}
+              onClose={handlePopoverClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+            >
+              <Box sx={{ p: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {'user@example.com'}
+                </Typography>
+                <Button variant="outlined" onClick={handleLogout} sx={{ textTransform: 'none' }}>
+                  Logout
+                </Button>
+              </Box>
+            </Popover>
           </Box>
         ) : (
           <Button
@@ -150,6 +197,8 @@ const Header = () => {
             {t('getStarted')}
           </Button>
         )}
+
+        {/* Drawer for Mobile */}
         {isMobile && (
           <TemporaryDrawer open={open} toggleDrawer={toggleDrawer} onChangeLanguage={handleChangeLanguage} />
         )}

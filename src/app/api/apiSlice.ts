@@ -2,6 +2,7 @@
 import { BaseQueryApi, createApi, FetchArgs, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store';
 import { logout, setCredentials } from '@/features/user/userSlice';
+import { toast } from 'react-toastify';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL,
@@ -19,7 +20,8 @@ const baseQuery = fetchBaseQuery({
 });
 
 const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: {}) => {
-  let result = await baseQuery(args, api, extraOptions);
+  let result:any = await baseQuery(args, api, extraOptions);
+  if (result.error){
 
   if (result.error && result.error.status === 401) {
     // Token is likely expired. Attempt to refresh.
@@ -55,8 +57,18 @@ const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, 
     } else {
       // Refresh failed, logout the user
       api.dispatch(logout());
+      toast.error('Session expired. Please log in again.');
     }
+  }else{
+    
+    const strings:any = result.error?.data?.details.reduce(
+      (accumulator:string, currentValue:string) => accumulator + currentValue,
+      '',
+    );
+    toast.error(strings);
   }
+}
+
 
   return result;
 };

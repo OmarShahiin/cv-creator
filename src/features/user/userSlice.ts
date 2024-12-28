@@ -36,6 +36,7 @@ export const userSlice = createSlice({
       localStorage.setItem('language', action.payload);
     },
     logout: (state) => {
+      localStorage.removeItem('user');
       state.accessToken = null;
       state.refreshToken = null;
       state.user = null;

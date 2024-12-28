@@ -13,9 +13,10 @@ interface PersonalDetailsFormProps {
     city: string;
     uploadImage?: File | string;
   };
+  onUpdate: (values: any) => void;
 }
 
-const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData }) => {
+const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, onUpdate }) => {
   return (
     <Box
       sx={{
@@ -37,7 +38,8 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData }
           uploadImage: initialData.uploadImage || '',
         }}
         onSubmit={(values) => {
-          console.log(values);
+          console.log('values', values);
+          // onUpdate(values);
         }}
       >
         {({ setFieldValue }) => (
@@ -49,7 +51,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData }
                 fontFamily: 'Poppins',
                 color: '#2B2A44',
                 marginBottom: '16px',
-                textAlign:"left"
+                textAlign: 'left',
               }}
             >
               Personal Details
@@ -95,9 +97,7 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData }
                 <Grid container justifyContent="flex-start" alignItems="center" direction="row" columnGap={2}>
                   <Avatar
                     alt="Profile Image"
-                    src={
-                      typeof initialData.uploadImage === 'string' ? initialData.uploadImage : undefined
-                    }
+                    src={typeof initialData.uploadImage === 'string' ? initialData.uploadImage : undefined}
                     sx={{ width: '47px', height: '47px', borderRadius: '10px' }}
                   />
                   <input

@@ -13,20 +13,20 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { arrayMove } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
-
+import dayjs from 'dayjs';
 interface EducationEntry {
   id: number;
-  School: string;
-  Degree: string;
-  startDate: string;
-  endDate: string;
+  school: string;
+  degree: string;
+  start_date: Date | null;
+  end_date: Date | null;
   city: string;
   description: string;
 }
@@ -39,26 +39,28 @@ interface EducationProps {
 const EducationSchema = Yup.object().shape({
   educationEntries: Yup.array().of(
     Yup.object().shape({
-      School: Yup.string().required('School is required'),
-      Degree: Yup.string().required('Degree is required'),
-      startDate: Yup.string().required('Start date is required'),
-      endDate: Yup.string().required('End date is required'),
-      city: Yup.string().required('City is required'),
-      description: Yup.string().required('Description is required'),
+      school: Yup.string(),
+      degree: Yup.string(),
+      start_date: Yup.date().nullable(),
+      end_date: Yup.date().nullable(),
+      city: Yup.string(),
+      description: Yup.string(),
     }),
   ),
 });
 
 const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
   const [expanded, setExpanded] = useState<number | false>(false);
-  const [isReorderEnabled, setIsReorderEnabled] = useState(false);
-
-  const sensors = useSensors(useSensor(PointerSensor));
-
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
+      },
+    }),
+  );
   const handleAccordionChange = (id: number) => (_: React.SyntheticEvent, isExpanded: boolean) => {
-    if (!isReorderEnabled) {
-      setExpanded(isExpanded ? id : false);
-    }
+    setExpanded(isExpanded ? id : false);
   };
 
   const handleDragEnd = (event: any, values: any, setFieldValue: any) => {
@@ -73,6 +75,14 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
     }
   };
 
+  const handleChange = (e: any, index: number, setFieldValue: any, values: any, name: string) => {
+    const value = e.target.value;
+
+    setFieldValue(`${e.target.name}`, value);
+    const updatedData = [...values.educationEntries];
+    updatedData[index][name] = value;
+    onUpdate(updatedData);
+  };
   return (
     <Formik
       initialValues={{ educationEntries: initialData }}
@@ -92,12 +102,6 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
           >
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }}>Education</Typography>
-              <Box>
-                rearrage
-                <IconButton onClick={() => setIsReorderEnabled(!isReorderEnabled)}>
-                  <SwapVertIcon color={isReorderEnabled ? 'primary' : 'inherit'} />
-                </IconButton>
-              </Box>
             </Box>
             <FieldArray name="educationEntries">
               {({ push, remove }) => (
@@ -107,11 +111,11 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                   onDragEnd={(event) => handleDragEnd(event, values, setFieldValue)}
                 >
                   <SortableContext
-                    items={values.educationEntries.map((entry) => entry.id)}
+                    items={values.educationEntries.map((entry, index) => entry?.id ?? index + 1)}
                     strategy={verticalListSortingStrategy}
                   >
                     {values.educationEntries.map((entry, index) => (
-                      <SortableItem key={entry.id} id={entry.id} isReorderEnabled={isReorderEnabled}>
+                      <SortableItem key={entry?.id ?? index + 1} id={entry?.id ?? index + 1} isReorderEnabled={true}>
                         <Box
                           sx={{
                             display: 'flex',
@@ -123,8 +127,8 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                           }}
                         >
                           <Accordion
-                            expanded={expanded === entry.id}
-                            onChange={handleAccordionChange(entry.id)}
+                            expanded={expanded === (entry?.id ?? index + 1)}
+                            onChange={handleAccordionChange(entry?.id ?? index + 1)}
                             sx={{
                               border: '1px solid #ccc',
                               borderRadius: '8px !important',
@@ -147,10 +151,9 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                                   fontWeight: '500',
                                   fontFamily: 'Poppins',
                                   color: '#2B2A44',
-                                  flexGrow: 1,
                                 }}
                               >
-                                {entry.School || 'New Entry'}
+                                {entry.school || 'New Entry'}
                               </Typography>
                             </AccordionSummary>
                             <Divider variant="middle" />
@@ -161,8 +164,9 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                                   <Box flex={1}>
                                     <InputLabel>School</InputLabel>
                                     <Field
+                                      onChange={(e: any) => handleChange(e, index, setFieldValue, values, 'school')}
                                       size="small"
-                                      name={`educationEntries[${index}].School`}
+                                      name={`educationEntries[${index}].school`}
                                       as={TextField}
                                       placeholder="School"
                                       variant="outlined"
@@ -174,7 +178,8 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                                     <InputLabel>Degree</InputLabel>
                                     <Field
                                       size="small"
-                                      name={`educationEntries[${index}].Degree`}
+                                      onChange={(e: any) => handleChange(e, index, setFieldValue, values, 'degree')}
+                                      name={`educationEntries[${index}].degree`}
                                       as={TextField}
                                       placeholder="Degree"
                                       variant="outlined"
@@ -186,27 +191,55 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                                 <Box display="flex" gap={2} justifyContent={'flex-start'}>
                                   <Box flex={1}>
                                     <InputLabel>Start Date</InputLabel>
-                                    <Field
-                                      size="small"
-                                      name={`educationEntries[${index}].startDate`}
-                                      as={TextField}
-                                      placeholder="MM/YY"
-                                      variant="outlined"
-                                      fullWidth
-                                      sx={{ borderRadius: '8px' }}
-                                    />
+                                    <Field name={`educationEntries[${index}].start_date`}>
+                                      {({ field, form }: any) => (
+                                        <DatePicker
+                                          value={dayjs(field.value)}
+                                          onChange={(date: any) => {
+                                            form.setFieldValue(
+                                              `educationEntries[${index}].start_date`,
+                                              dayjs(date).format('DD-MM-YYYY'),
+                                            );
+                                          }}
+                                          format="DD-MM-YYYY"
+                                          slotProps={{
+                                            textField: {
+                                              size: 'small',
+                                              sx: {
+                                                // backgroundColor: 'red',
+                                                width: '100%',
+                                              },
+                                            },
+                                          }}
+                                        />
+                                      )}
+                                    </Field>
                                   </Box>
                                   <Box flex={1}>
                                     <InputLabel>End Date</InputLabel>
-                                    <Field
-                                      size="small"
-                                      name={`educationEntries[${index}].endDate`}
-                                      as={TextField}
-                                      placeholder="MM/YY"
-                                      variant="outlined"
-                                      fullWidth
-                                      sx={{ borderRadius: '8px' }}
-                                    />
+                                    <Field name={`educationEntries[${index}].end_date`}>
+                                      {({ field, form }: any) => (
+                                        <DatePicker
+                                          value={dayjs(field.value)}
+                                          onChange={(date) => {
+                                            form.setFieldValue(
+                                              `educationEntries[${index}].end_date`,
+                                              dayjs(date).format('DD-MM-YYYY'),
+                                            );
+                                          }}
+                                          format="DD-MM-YYYY"
+                                          slotProps={{
+                                            textField: {
+                                              size: 'small',
+                                              sx: {
+                                                // backgroundColor: 'red',
+                                                width: '100%',
+                                              },
+                                            },
+                                          }}
+                                        />
+                                      )}
+                                    </Field>
                                   </Box>
                                 </Box>
                                 <Box>
@@ -215,6 +248,7 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                                     size="small"
                                     name={`educationEntries[${index}].city`}
                                     as={TextField}
+                                    onChange={(e: any) => handleChange(e, index, setFieldValue, values, 'city')}
                                     placeholder="City"
                                     variant="outlined"
                                     fullWidth
@@ -227,6 +261,7 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                                     size="small"
                                     name={`educationEntries[${index}].description`}
                                     as={TextField}
+                                    onChange={(e: any) => handleChange(e, index, setFieldValue, values, 'description')}
                                     placeholder="Description"
                                     variant="outlined"
                                     fullWidth
@@ -266,8 +301,8 @@ const Education: React.FC<EducationProps> = ({ initialData, onUpdate }) => {
                           id: values.educationEntries.length + 1,
                           School: '',
                           Degree: '',
-                          startDate: '',
-                          endDate: '',
+                          startDate: null,
+                          endDate: null,
                           city: '',
                           description: '',
                         })

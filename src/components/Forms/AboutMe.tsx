@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, TextField, Typography } from '@mui/material';
 
 interface AboutMeProps {
   aboutMe: string;
-  onUpdate: (updatedAboutMe: string) => void;
+  onUpdate: (updatedData: { summary: string }) => void;
 }
 
 const AboutMe: React.FC<AboutMeProps> = ({ aboutMe, onUpdate }) => {
   const [text, setText] = React.useState(aboutMe);
-
+  const [changed, setchanged] = React.useState(false);
   // const handleSave = () => {
   //   onUpdate(text); // Pass the updated text back to the parent
   // };
+  useEffect(() => {
+    if (changed) {
+      onUpdate({ summary: text });
+    }
+    return () => {};
+  }, [text]);
 
   return (
     <Box
@@ -37,20 +43,11 @@ const AboutMe: React.FC<AboutMeProps> = ({ aboutMe, onUpdate }) => {
         multiline
         rows={4}
         value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-      {/* <Button
-        variant="contained"
-        color="primary"
-        sx={{
-          marginTop: '12px',
-          textTransform: 'none',
-          alignSelf: 'flex-start',
+        onChange={(e) => {
+          setchanged(true);
+          setText(e.target.value);
         }}
-        onClick={handleSave}
-      >
-        Save Changes
-      </Button> */}
+      />
     </Box>
   );
 };

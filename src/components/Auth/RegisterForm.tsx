@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSendOtpMutation } from '@/features/user/authApiSlice';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const RegisterForm = () => {
   const { t } = useTranslation();
@@ -14,11 +15,11 @@ export const RegisterForm = () => {
 
   const handleSendOtp = async () => {
     if (!email) {
-      alert(t('errors.enterEmail'));
+      toast.error(t('errors.enterEmail'));
       return;
     }
     if (!checked) {
-      alert(t('errors.agreeTerms'));
+      toast.error(t('errors.agreeTerms'));
       return;
     }
 
@@ -27,7 +28,7 @@ export const RegisterForm = () => {
       navigate('/OTP', { state: { email } });
     } catch (error) {
       console.error('Failed to send OTP:', error);
-      alert(t('errors.sendingOtp'));
+      toast.error(t('errors.sendingOtp'));
     }
   };
 

@@ -13,13 +13,14 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
 import { Formik, Form, Field, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { arrayMove } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 interface EmploymentEntry {
   id: number;
@@ -51,14 +52,19 @@ const EmploymentSchema = Yup.object().shape({
 
 const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUpdate }) => {
   const [expanded, setExpanded] = useState<number | false>(false);
-  const [isReorderEnabled, setIsReorderEnabled] = useState(false);
 
-  const sensors = useSensors(useSensor(PointerSensor));
-
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
+      },
+    }),
+  );
   const handleAccordionChange = (id: number) => (_: React.SyntheticEvent, isExpanded: boolean) => {
-    if (!isReorderEnabled) {
-      setExpanded(isExpanded ? id : false);
-    }
+    // if (!isReorderEnabled) {
+    setExpanded(isExpanded ? id : false);
+    // }
   };
 
   const handleDragEnd = (event: any, values: any, setFieldValue: any) => {
@@ -94,12 +100,6 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
               <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins' }}>
                 Employment History
               </Typography>
-              <Box>
-                rearrage
-                <IconButton onClick={() => setIsReorderEnabled(!isReorderEnabled)}>
-                  <SwapVertIcon color={isReorderEnabled ? 'primary' : 'inherit'} />
-                </IconButton>
-              </Box>
             </Box>
             <FieldArray name="employmentEntries">
               {({ push, remove }) => (
@@ -113,7 +113,7 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                     strategy={verticalListSortingStrategy}
                   >
                     {values.employmentEntries.map((entry, index) => (
-                      <SortableItem key={entry.id} id={entry.id} isReorderEnabled={isReorderEnabled}>
+                      <SortableItem key={entry.id} id={entry.id} isReorderEnabled={true}>
                         <Box
                           sx={{
                             display: 'flex',
@@ -149,7 +149,6 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                                   fontWeight: '500',
                                   fontFamily: 'Poppins',
                                   color: '#2B2A44',
-                                  flexGrow: 1,
                                 }}
                               >
                                 {entry.company || 'New Entry'}
@@ -187,27 +186,55 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
                                 <Box display="flex" gap={2}>
                                   <Box flex={1}>
                                     <InputLabel>Start Date</InputLabel>
-                                    <Field
-                                      size="small"
-                                      name={`employmentEntries[${index}].start_date`}
-                                      as={TextField}
-                                      placeholder="MM/YY"
-                                      variant="outlined"
-                                      fullWidth
-                                      sx={{ borderRadius: '8px' }}
-                                    />
+                                    <Field name={`employmentEntries[${index}].start_date`}>
+                                      {({ field, form }: any) => (
+                                        <DatePicker
+                                          value={dayjs(field.value)}
+                                          onChange={(date) => {
+                                            form.setFieldValue(
+                                              `employmentEntries[${index}].start_date`,
+                                              dayjs(date).format('DD-MM-YYYY'),
+                                            );
+                                          }}
+                                          format="DD-MM-YYYY"
+                                          slotProps={{
+                                            textField: {
+                                              size: 'small',
+                                              sx: {
+                                                // backgroundColor: 'red',
+                                                width: '100%',
+                                              },
+                                            },
+                                          }}
+                                        />
+                                      )}
+                                    </Field>
                                   </Box>
                                   <Box flex={1}>
                                     <InputLabel>End Date</InputLabel>
-                                    <Field
-                                      size="small"
-                                      name={`employmentEntries[${index}].end_date`}
-                                      as={TextField}
-                                      placeholder="MM/YY"
-                                      variant="outlined"
-                                      fullWidth
-                                      sx={{ borderRadius: '8px' }}
-                                    />
+                                    <Field name={`employmentEntries[${index}].end_date`}>
+                                      {({ field, form }: any) => (
+                                        <DatePicker
+                                          value={field?.value ? dayjs(field?.value) : undefined}
+                                          onChange={(date) => {
+                                            form.setFieldValue(
+                                              `employmentEntries[${index}].end_date`,
+                                              dayjs(date).format('DD-MM-YYYY'),
+                                            );
+                                          }}
+                                          format="DD-MM-YYYY"
+                                          slotProps={{
+                                            textField: {
+                                              size: 'small',
+                                              sx: {
+                                                // backgroundColor: 'red',
+                                                width: '100%',
+                                              },
+                                            },
+                                          }}
+                                        />
+                                      )}
+                                    </Field>
                                   </Box>
                                 </Box>
                                 <Box>

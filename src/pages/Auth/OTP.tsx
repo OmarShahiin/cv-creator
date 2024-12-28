@@ -6,12 +6,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useSendOtpMutation, useValidateOtpMutation } from '@/features/user/authApiSlice';
 import { useAppDispatch } from '@/app/store';
 import { setCredentials } from '@/features/user/userSlice';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 
 export const OTP = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
   const isMobilexs = useMediaQuery(theme.breakpoints.down(376));
   const [otp, setOtp] = useState(['', '', '', '', '']);
+  console.log('otp', otp);
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || '';
@@ -19,26 +22,24 @@ export const OTP = () => {
   // Use the mutation hooks
   const [validateOtp, { isLoading: isValidating }] = useValidateOtpMutation();
   const [resendOtp, { isLoading: isResending }] = useSendOtpMutation();
+  const { login } = useAuth();
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    // Prevent the browser from inserting the text into just one input field
+    e.preventDefault();
     const pastedData = e.clipboardData.getData('text');
+    console.log('pastedData', pastedData);
     if (/^\d+$/.test(pastedData)) {
       const newOtp = [...otp];
+      console.log('newOtp', newOtp);
+
       for (let i = 0; i < pastedData.length && i < otp.length; i++) {
         newOtp[i] = pastedData[i];
       }
       setOtp(newOtp);
-
-      // Focus the next empty field
-      const firstEmptyIndex = newOtp.findIndex((val) => val === '');
-      if (firstEmptyIndex !== -1) {
-        document?.getElementById(`otp-${firstEmptyIndex}`)?.focus();
-      }
     }
   };
-
-  const handleChange = (e: any, index: number) => {
-    const value = e.target.value;
+  const validateAndSet = (value: any, index: number) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
@@ -50,6 +51,10 @@ export const OTP = () => {
       }
     }
   };
+  const handleChange = (e: any, index: number) => {
+    const value = e.target.value;
+    validateAndSet(value, index);
+  };
 
   const handleKeyDown = (e: any, index: number) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
@@ -59,6 +64,7 @@ export const OTP = () => {
   };
 
   const handleResendCode = async () => {
+    setOtp(['', '', '', '', '']);
     try {
       await resendOtp({ email }).unwrap();
     } catch (error) {}
@@ -67,7 +73,7 @@ export const OTP = () => {
   const handleSubmit = async () => {
     const otpValue = otp.join('');
     if (otpValue.length !== 5) {
-      alert('Please enter a valid 5-digit OTP');
+      toast.error('Please enter a valid 5-digit OTP');
       return;
     }
 
@@ -79,11 +85,13 @@ export const OTP = () => {
           refreshToken: dataRes.refresh,
         }),
       );
-
+      login({
+        accessToken: dataRes.access,
+        refreshToken: dataRes.refresh,
+      });
       navigate('/home'); // Navigate to the home screen or desired destination
     } catch (error) {
       console.error('Error validating OTP:', error);
-      alert('Invalid OTP. Please try again.');
     }
   };
 
