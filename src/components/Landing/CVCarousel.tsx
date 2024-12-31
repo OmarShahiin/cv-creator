@@ -5,12 +5,15 @@ import ArrowForwardIosIcon from '@/assets/next.svg';
 import CenteredSwiper from './Swiper';
 import certifaied from '@/assets/certified.svg';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const CVCarousel = () => {
   const { t } = useTranslation(); // Use translation hook
   const scrollRef = useRef<any>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigation = useNavigate();
+  const user = localStorage.getItem('user') || null;
 
   return (
     <Box
@@ -84,9 +87,18 @@ const CVCarousel = () => {
             display: isMobile ? 'none' : 'block',
           }}
         >
-          <Box component={'img'} src={ArrowBackIosNewIcon} />
+          <Box
+            component={'img'}
+            sx={{
+              transform: document.dir == 'rtl' ? 'rotate(180deg)' : 'unset',
+            }}
+            src={ArrowBackIosNewIcon}
+          />
         </IconButton>
         <Button
+          onClick={() => {
+            !user ? navigation('/register') : navigation('/home');
+          }}
           variant="contained"
           color="primary"
           sx={{ marginInline: 'auto', paddingBlock: '14px', borderRadius: '13px' }}
@@ -109,7 +121,13 @@ const CVCarousel = () => {
           onClick={() => scrollRef.current?.slideNext()}
           sx={{ minWidth: 'auto', display: isMobile ? 'none' : 'block' }}
         >
-          <Box component={'img'} src={ArrowForwardIosIcon} />
+          <Box
+            component={'img'}
+            sx={{
+              transform: document.dir == 'rtl' ? 'rotate(180deg)' : 'unset',
+            }}
+            src={ArrowForwardIosIcon}
+          />
         </IconButton>
       </Box>
       <Box sx={{ width: '100vw', marginBottom: '0px' }}>

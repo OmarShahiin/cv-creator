@@ -91,7 +91,7 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
       palette: {
         mode: 'light',
         primary: {
-          main: 'rgba(14, 65, 252, 1)',
+          main: '#0E41FC',
         },
         secondary: {
           main: '#9DF3C4',
@@ -160,7 +160,7 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
       },
 
       typography: {
-        fontFamily: i18n.dir()== 'ltr' ? 'Dosis, sans-serif':'IBM Plex Sans Arabic',
+        fontFamily: i18n.dir() == 'ltr' ? 'Dosis, sans-serif' : 'IBM Plex Sans Arabic',
 
         h1: {
           fontSize: '26px',
@@ -249,6 +249,18 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
           styleOverrides: {
             body: {
               // ---CSS BODY--- \\
+            },
+          },
+        },
+        MuiInputLabel: {
+          styleOverrides: {
+            root: {
+              textAlign: 'left',
+              fontSize: '12px',
+              fontWeight: '400',
+              color: '#000000',
+              fontFamily: 'Poppins',
+              marginBottom: '12px',
             },
           },
         },

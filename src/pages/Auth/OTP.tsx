@@ -6,12 +6,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useSendOtpMutation, useValidateOtpMutation } from '@/features/user/authApiSlice';
 import { useAppDispatch } from '@/app/store';
 import { setCredentials } from '@/features/user/userSlice';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 
 export const OTP = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
   const isMobilexs = useMediaQuery(theme.breakpoints.down(376));
   const [otp, setOtp] = useState(['', '', '', '', '']);
+  console.log('otp', otp);
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || '';
@@ -19,9 +22,24 @@ export const OTP = () => {
   // Use the mutation hooks
   const [validateOtp, { isLoading: isValidating }] = useValidateOtpMutation();
   const [resendOtp, { isLoading: isResending }] = useSendOtpMutation();
+  const { login } = useAuth();
 
-  const handleChange = (e: any, index: number) => {
-    const value = e.target.value;
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    // Prevent the browser from inserting the text into just one input field
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text');
+    console.log('pastedData', pastedData);
+    if (/^\d+$/.test(pastedData)) {
+      const newOtp = [...otp];
+      console.log('newOtp', newOtp);
+
+      for (let i = 0; i < pastedData.length && i < otp.length; i++) {
+        newOtp[i] = pastedData[i];
+      }
+      setOtp(newOtp);
+    }
+  };
+  const validateAndSet = (value: any, index: number) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
@@ -33,38 +51,48 @@ export const OTP = () => {
       }
     }
   };
+  const handleChange = (e: any, index: number) => {
+    const value = e.target.value;
+    validateAndSet(value, index);
+  };
+
+  const handleKeyDown = (e: any, index: number) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      // Move focus to the previous input if backspace is pressed and the current field is empty
+      document?.getElementById(`otp-${index - 1}`)?.focus();
+    }
+  };
 
   const handleResendCode = async () => {
+    setOtp(['', '', '', '', '']);
     try {
       await resendOtp({ email }).unwrap();
-      alert('OTP has been resent to your email');
-    } catch (error) {
-      console.error('Error resending OTP:', error);
-      alert('Failed to resend OTP. Please try again.');
-    }
+    } catch (error) {}
   };
 
   const handleSubmit = async () => {
     const otpValue = otp.join('');
     if (otpValue.length !== 5) {
-      alert('Please enter a valid 5-digit OTP');
+      toast.error('Please enter a valid 5-digit OTP');
       return;
     }
 
     try {
-      const datares: any = await validateOtp({ email, otp: '518700' }).unwrap();
-      console.log('datares', datares);
+      const dataRes: any = await validateOtp({ email, otp: otp.toString().replace(/,/g, '') }).unwrap();
       dispatch(
         setCredentials({
-          accessToken: datares.access,
-          refreshToken: datares.refresh,
+          accessToken: dataRes.access,
+          refreshToken: dataRes.refresh,
+          user: dataRes,
         }),
       );
-      alert('OTP validated successfully');
+      login({
+        accessToken: dataRes.access,
+        refreshToken: dataRes.refresh,
+      });
       navigate('/home'); // Navigate to the home screen or desired destination
     } catch (error) {
       console.error('Error validating OTP:', error);
-      alert('Invalid OTP. Please try again.');
     }
   };
 
@@ -105,7 +133,13 @@ export const OTP = () => {
               <Link href="#" style={{ color: '#0e41fb' }}>
                 {email}{' '}
               </Link>
-              <Link href="#" style={{ color: '#828291', textDecoration: 'underline' }}>
+              <Link
+                style={{ color: '#828291', textDecoration: 'underline' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/register');
+                }}
+              >
                 Change?
               </Link>
             </Typography>
@@ -126,6 +160,8 @@ export const OTP = () => {
                   variant="outlined"
                   value={digit}
                   onChange={(e) => handleChange(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  onPaste={handlePaste}
                   inputProps={{
                     maxLength: 1,
                     style: { textAlign: 'center' },
@@ -135,23 +171,28 @@ export const OTP = () => {
                     height: '47px',
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '8px',
-                      paddingInline: isMobilexs ? '8px' : '12px',
                     },
                   }}
                 />
               ))}
             </Box>
-            <Link
-              href="#"
+            <Button
+              disableRipple
+              disableFocusRipple
               onClick={handleResendCode}
               color="primary"
-              underline="hover"
-              mb={2}
-              mr="auto"
-              sx={{ cursor: isResending ? 'not-allowed' : 'pointer' }}
+              sx={{
+                marginRight: 'auto',
+                cursor: isResending ? 'not-allowed' : 'pointer',
+                '&:hover': {
+                  bgcolor: '#FFF',
+                  opacity: isResending ? 0.5 : 1,
+                },
+              }}
+              variant="text"
             >
               {isResending ? 'Resending...' : 'Send code again'}
-            </Link>
+            </Button>
 
             <Button
               variant="contained"

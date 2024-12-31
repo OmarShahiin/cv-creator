@@ -1,24 +1,14 @@
-import {
-  Container,
-  Typography,
-  Tabs,
-  Tab,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  useTheme,
-  useMediaQuery,
-} from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Container, Typography, Tabs, Tab, Box, useTheme, useMediaQuery } from '@mui/material';
 import { useState, useEffect } from 'react';
 import Header from '@/components/Landing/Header';
 import { useNavigate } from 'react-router-dom';
 import { useGetCategoriesQuery, useGetTemplatesQuery } from '@/features/home/home';
+import { TemplatesGrid } from '@/components/Content/TemplatesGrid';
 
 function Templates() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
+
   const navigation = useNavigate();
 
   const theme = useTheme();
@@ -26,7 +16,9 @@ function Templates() {
   const isMobilexs = useMediaQuery(theme.breakpoints.down(376));
 
   const { data: categories = [], isLoading: isLoadingCategories } = useGetCategoriesQuery();
+  console.log('categories', categories);
   const { data: templates = [], isLoading: isLoadingTemplates } = useGetTemplatesQuery();
+  console.log('templates', templates);
 
   const handleTabChange = (_: any, newValue: any) => {
     setSelectedTab(newValue);
@@ -39,7 +31,7 @@ function Templates() {
   const filteredTemplates =
     selectedTab === 0
       ? templates
-      : templates.filter((template: any) => template.category === categories[selectedTab]?.id);
+      : templates.filter((template) => template.category === categories[selectedTab - 1]?.id);
 
   useEffect(() => {
     // Set the first template as selected by default when templates are loaded
@@ -121,7 +113,7 @@ function Templates() {
         >
           <Tabs value={selectedTab} onChange={handleTabChange} variant="scrollable" sx={{ maxHeight: '55px' }}>
             <Tab label="All Templates" />
-            {categories.map((category: any) => (
+            {categories.map((category) => (
               <Tab key={category.id} label={category.name} />
             ))}
           </Tabs>
@@ -130,60 +122,12 @@ function Templates() {
         {isLoadingCategories || isLoadingTemplates ? (
           <Typography textAlign="center">Loading...</Typography>
         ) : (
-          <Grid container spacing={2}>
-            {filteredTemplates.map((template: any) => (
-              <Grid
-                size={{
-                  xs: 6,
-                  sm: 6,
-                  md: 3,
-                }}
-                key={template.id}
-              >
-                <Card
-                  onClick={() => handleCardClick(template.id)}
-                  sx={{
-                    minWidth: isMobile ? '160px' : '272px',
-                    height: isMobile ? '254px' : '479px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    backgroundImage: `url(${template.image})`,
-                    backgroundPosition: 'center',
-                    border: selectedTemplate === template.id ? '7px solid rgba(173, 192, 240, 0.35)' : 'none',
-                    cursor: 'pointer',
-                    backgroundSize: '100% 100%',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                >
-                  <CardContent
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'flex-end',
-                      height: '100%',
-                    }}
-                  >
-                    {selectedTemplate === template.id && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                          fontSize: isMobile ? '8px' : '12px',
-                          fontWeight: '400',
-                          fontFamily: 'Poppins',
-                          textTransform: 'none',
-                          zIndex: 99,
-                        }}
-                        onClick={() => navigation('/create', { state: { templateId: template.id } })}
-                      >
-                        Use This Template
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+          <TemplatesGrid
+            templates={filteredTemplates}
+            selectedTemplate={selectedTemplate}
+            onCardClick={handleCardClick}
+            onUseCard={(templateId) => navigation('/create', { state: { templateId } })}
+          />
         )}
       </Container>
     </>

@@ -2,12 +2,14 @@ import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material'
 import imageBG from '@/assets/images/imageCreateCV.png'; // Update the path to your image
 import cvs from '@/assets/📄 Mockup.svg'; // Update the path to your image
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const CreateCvSection = () => {
   const { t } = useTranslation(); // Use translation hook
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const navigation = useNavigate();
+  const user = localStorage.getItem('user') || null;
   return (
     <Box
       sx={{
@@ -39,19 +41,21 @@ const CreateCvSection = () => {
           overflowY: 'hidden',
         }}
       >
-        <Box p={0} sx={{
-            textAlign:"start",
+        <Box
+          p={0}
+          sx={{
+            textAlign: 'start',
             justifyItems: 'start',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'start',
-        }}>
+          }}
+        >
           <Typography
             sx={{
               fontWeight: '900',
               fontSize: isMobile ? '34px' : '58px',
               maxWidth: '416px',
-            
             }}
           >
             {t('createCvSection.title')}
@@ -63,13 +67,16 @@ const CreateCvSection = () => {
               maxWidth: '416px',
               fontWeight: '400',
               marginTop: '23px',
-              textAlign:"start"
+              textAlign: 'start',
             }}
           >
             {t('createCvSection.subtitle')}
           </Typography>
 
           <Button
+            onClick={() => {
+              !user ? navigation('/register') : navigation('/home');
+            }}
             variant="contained"
             sx={{
               fontWeight: isMobile ? '700' : 'bold',

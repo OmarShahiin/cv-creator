@@ -1,38 +1,73 @@
-import React, { useEffect } from 'react';
-import { Box, Typography, Button, useTheme, useMediaQuery } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Button, useTheme, useMediaQuery, Popover, ButtonBase } from '@mui/material';
 import EnAppLogo from '@/assets/appLogo.svg';
 import arAppLogo from '@/assets/appLogoAr.svg';
 import TemporaryDrawer from './Drawer';
 import { useNavigate } from 'react-router-dom';
-import TranslateIcon from '@mui/icons-material/Translate';
 import { useAppDispatch, useAppSelector } from '@/app/store';
-import { setLanguage } from '@/features/user/userSlice';
+import { logout, setLanguage } from '@/features/user/userSlice'; // <-- Import logout
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
+import { useJwt } from 'react-jwt';
+import PersonIcon from '@mui/icons-material/Person';
+import { useAuth } from '@/context/AuthContext';
 
 const Header = () => {
-  const { t } = useTranslation(); // Add translation hook
-  const [open, setOpen] = React.useState(false);
-  const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
+  const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigation = useNavigate();
   const dispatch = useAppDispatch();
+  const { logout: userAuthLogout } = useAuth();
+  // Language
   const language = useAppSelector((state) => state.user.language);
 
+  // Grab user info from store
+  const { accessToken } = useAppSelector((state) => state.user);
+
+  // JWT decode
+  const { decodedToken, isExpired } = useJwt(accessToken ?? '');
+
+  // Drawer state
+  const [open, setOpen] = useState(false);
+  const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
+
+  // Popover state
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handlePersonClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openPopover = Boolean(anchorEl);
+  const popoverId = openPopover ? 'user-popover' : undefined;
+
+  // Handle language switch
   const handleChangeLanguage = () => {
     const newLanguage = language === 'en' ? 'ar' : 'en';
     dispatch(setLanguage(newLanguage));
     i18n.changeLanguage(newLanguage);
-
-    // Change page direction
     document.documentElement.setAttribute('dir', newLanguage === 'en' ? 'ltr' : 'rtl');
   };
 
-  // Ensure direction is updated on initial render
   useEffect(() => {
     document.documentElement.setAttribute('dir', language === 'en' ? 'ltr' : 'rtl');
+    if (decodedToken && isExpired) {
+      dispatch(logout());
+    }
   }, [language]);
+
+  // Handle logout
+  const handleLogout = () => {
+    userAuthLogout();
+    dispatch(logout());
+    handlePopoverClose();
+    // Optionally navigate the user to a public route
+    navigation('/');
+  };
 
   return (
     <Box
@@ -45,22 +80,28 @@ const Header = () => {
         justifyContent: 'space-between',
         fontFamily: 'Poppins',
         fontSize: 14,
-        maxWidth: 'xl',
+        maxWidth: '1400px',
         paddingInline: isMobile ? '17px' : '',
       }}
     >
       {/* Logo */}
-      <Box
-        component="img"
-        src={i18n.dir() == "ltr" ? EnAppLogo : arAppLogo}
-        alt={t('appLogoAlt')} // Add alt text for translation
-        sx={{
-          width: '73.7px',
-          height: '32.6px',
-        }}
-      />
+      <Box flex={0.5} display="flex" flexDirection="row" justifyContent="center">
+        <Box
+          onClick={() => navigation('/')}
+          component="img"
+          src={i18n.dir() === 'ltr' ? EnAppLogo : arAppLogo}
+          alt={t('appLogoAlt')}
+          sx={{
+            width: '73.7px',
+            height: '32.6px',
+            ':hover': {
+              cursor: 'pointer',
+            },
+          }}
+        />
+      </Box>
 
-      {/* Navigation Links */}
+      {/* Navigation Links (Optional, currently empty array) */}
       {!isMobile && (
         <Box
           sx={{
@@ -71,59 +112,96 @@ const Header = () => {
             gap: '15px',
           }}
         >
-          {['cvBuilder', 'features.navtitle', 'pricing', 'aboutUs'].map((key, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '15px',
-              }}
-            >
-              <Typography sx={{ lineHeight: '150%', color: '#2B2A44', cursor: 'pointer' }}>
-                {t(key)}
-              </Typography>
-              {index < 3 && (
-                <Box
-                  sx={{
-                    width: 3,
-                    height: 3,
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.26)',
-                  }}
-                />
-              )}
-            </Box>
-          ))}
+          {/* Example if you had nav links: 
+            ['home','about','contact'].map(...)
+          */}
         </Box>
       )}
 
-      {/* Language Switch and Get Started Button */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        {!isMobile && (
+      {/* Language Switch & Profile / Get Started */}
+      <Box
+        sx={{
+          flex: 0.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+        }}
+      >
+        {/* Language Switch (hidden on mobile if you choose) */}
+        {!isMobile && <Button onClick={handleChangeLanguage}>{language === 'en' ? 'AR' : 'EN'}</Button>}
+
+        {/* If token is valid, show person icon & email; otherwise, show "Get Started" button */}
+        {decodedToken && !isExpired ? (
+          <Box display="flex" alignItems="center" gap={1}>
+            <ButtonBase onClick={handlePersonClick}>
+              <PersonIcon
+                aria-describedby={popoverId}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                }}
+              />
+            </ButtonBase>
+
+            <Typography
+              aria-describedby={popoverId}
+              onClick={handlePersonClick}
+              sx={{
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                fontWeight: 400,
+                color: '#2B2A44',
+                cursor: 'pointer',
+              }}
+            >
+              {'user@example.com'}
+            </Typography>
+
+            {/* Popover */}
+            <Popover
+              id={popoverId}
+              open={openPopover}
+              anchorEl={anchorEl}
+              onClose={handlePopoverClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+            >
+              <Box sx={{ p: 2 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  {'user@example.com'}
+                </Typography>
+                <Button variant="outlined" onClick={handleLogout} sx={{ textTransform: 'none' }}>
+                  Logout
+                </Button>
+              </Box>
+            </Popover>
+          </Box>
+        ) : (
           <Button
-            onClick={handleChangeLanguage}
-            sx={{ display: { md: 'inline-flex' } }}
+            variant="contained"
+            sx={{
+              backgroundColor: '#0e41fc',
+              borderRadius: '8px',
+              padding: '7px 12px',
+              fontWeight: 600,
+              lineHeight: '150%',
+              zIndex: 3,
+            }}
+            onClick={() => {
+              navigation('/register');
+            }}
           >
-            {language === 'en' ? 'AR' : 'EN'}
+            {t('getStarted')}
           </Button>
         )}
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: '#0e41fc',
-            borderRadius: '8px',
-            padding: '7px 12px',
-            fontWeight: 600,
-            lineHeight: '150%',
-            zIndex: 3,
-          }}
-          onClick={() => {
-            navigation('/register');
-          }}
-        >
-          {t('getStarted')}
-        </Button>
+
+        {/* Drawer for Mobile */}
         {isMobile && (
           <TemporaryDrawer open={open} toggleDrawer={toggleDrawer} onChangeLanguage={handleChangeLanguage} />
         )}

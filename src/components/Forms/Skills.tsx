@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Chip, Typography } from '@mui/material';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Box, Button, Chip, Typography, TextField } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import More from '@/assets/more.svg';
 
@@ -11,40 +11,74 @@ type Skill = {
 interface MultiSelectTagsProps {
   initialSelectedSkills?: number[]; // Pre-selected skill IDs
   skillsData: Skill[]; // Available skills
-  onUpdate?: (selectedSkills: number[]) => void; // Callback for updates
+  onUpdate?: (selectedSkills: { technical_skills: { name: string }[] }) => void; // Callback for updates
 }
 
 const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
   initialSelectedSkills = [],
-  skillsData,
+  skillsData: initialSkillsData,
   onUpdate,
 }) => {
+  const [allSkills, setAllSkills] = useState<Skill[]>(initialSkillsData);
   const [selectedSkills, setSelectedSkills] = useState<number[]>(initialSelectedSkills);
+  const [isAddingSkill, setIsAddingSkill] = useState(false);
+  const [newSkillLabel, setNewSkillLabel] = useState('');
 
-  // Notify parent of changes
+  // Memoized selected skill objects
+  const selectedSkillObjects = useMemo(() => {
+    return selectedSkills
+      .map((id) => {
+        const skill = allSkills.find((skill) => skill.id === id);
+        return skill ? { name: skill.label } : null;
+      })
+      .filter((skill) => skill !== null) as { name: string }[];
+  }, [selectedSkills, allSkills]);
+
+  // Detect if skills have changed
+  const skillsChanged = useMemo(() => {
+    return (
+      initialSelectedSkills.length !== selectedSkills.length ||
+      !initialSelectedSkills.every((id) => selectedSkills.includes(id))
+    );
+  }, [initialSelectedSkills, selectedSkills]);
+
   useEffect(() => {
-    if (onUpdate) {
-      onUpdate(selectedSkills);
+    if (skillsChanged && !isAddingSkill) {
+      onUpdate?.({ technical_skills: selectedSkillObjects });
     }
-  }, [selectedSkills, onUpdate]);
+  }, [skillsChanged, isAddingSkill]);
 
-  // Handler for toggling selection
-  const toggleSkill = (id: number): void => {
+  const toggleSkill = (id: number) => {
     setSelectedSkills((prev) => (prev.includes(id) ? prev.filter((skillId) => skillId !== id) : [...prev, id]));
+  };
+
+  const handleAddSkill = () => {
+    const trimmed = newSkillLabel.trim();
+    if (trimmed === '') return;
+
+    const newId = allSkills.length ? Math.max(...allSkills.map((s) => s.id)) + 1 : 1;
+    const newSkill: Skill = { id: newId, label: trimmed };
+
+    setAllSkills((prev) => [...prev, newSkill]);
+    setSelectedSkills((prev) => [...prev, newId]);
+    setNewSkillLabel('');
+    setIsAddingSkill(false);
   };
 
   return (
     <Box
       p={2}
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
         backgroundColor: '#fff',
         borderRadius: '16px',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
       }}
     >
-      {/* Heading */}
-      <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins', marginBottom: '16px' }}>
-        Skills
-      </Typography>
+      <Typography sx={{ fontSize: '18px', fontWeight: '600', fontFamily: 'Poppins', mb: 2 }}>Skills</Typography>
+
       <Box
         sx={{
           display: 'flex',
@@ -52,14 +86,18 @@ const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
           flexWrap: 'wrap',
         }}
       >
-        {skillsData.map((skill) => (
+        {allSkills.map((skill) => (
           <Chip
             key={skill.id}
             label={skill.label}
             onDelete={() => toggleSkill(skill.id)}
             onClick={() => toggleSkill(skill.id)}
             deleteIcon={
-              selectedSkills.includes(skill.id) ? <DoneIcon fill="#FFF" /> : <Box component={'img'} src={More} />
+              selectedSkills.includes(skill.id) ? (
+                <DoneIcon style={{ fill: '#FFF' }} />
+              ) : (
+                <Box component={'img'} src={More} />
+              )
             }
             sx={{
               cursor: 'pointer',
@@ -78,6 +116,47 @@ const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
             }}
           />
         ))}
+      </Box>
+
+      <Box mt={2}>
+        {!isAddingSkill ? (
+          <Button
+            onClick={() => setIsAddingSkill(true)}
+            color="primary"
+            sx={{
+              '&:hover': {
+                backgroundColor: '#FFF',
+              },
+            }}
+          >
+            + Add More
+          </Button>
+        ) : (
+          <Box display="flex" gap={1} alignItems="center">
+            <TextField
+              size="small"
+              variant="outlined"
+              placeholder="Enter new skill..."
+              value={newSkillLabel}
+              onChange={(e) => setNewSkillLabel(e.target.value)}
+              autoFocus
+              onKeyDownCapture={(e) => e.key === 'Enter' && handleAddSkill()}
+            />
+            <Button variant="outlined" color="primary" onClick={handleAddSkill}>
+              Add
+            </Button>
+            <Button
+              variant="text"
+              color="error"
+              onClick={() => {
+                setIsAddingSkill(false);
+                setNewSkillLabel('');
+              }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );
