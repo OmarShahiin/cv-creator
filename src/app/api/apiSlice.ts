@@ -5,7 +5,7 @@ import { logout, setCredentials } from '@/features/user/userSlice';
 import { toast } from 'react-toastify';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_URL,
+  baseUrl: import.meta.env.VITE_API_URL ?? 'https://dev.tobe.expert',
   prepareHeaders: (headers, { getState }) => {
     const res = getState() as RootState;
     console.log('res', res);
