@@ -28,18 +28,14 @@ interface SocialEntry {
 
 interface SocialProps {
   initialData: SocialEntry[];
-  onUpdate: (updatedData: SocialEntry[]) => void;
+  onUpdate: (updatedData: { social_links: SocialEntry[] }) => void;
 }
 
 const SocialSchema = Yup.object().shape({
   socialEntries: Yup.array().of(
     Yup.object().shape({
-      School: Yup.string().required('School is required'),
-      Degree: Yup.string().required('Degree is required'),
-      startDate: Yup.string().required('Start date is required'),
-      endDate: Yup.string().required('End date is required'),
-      city: Yup.string().required('City is required'),
-      description: Yup.string().required('Description is required'),
+      label: Yup.string().required('Label is required'),
+      link: Yup.string().required('Link is required'),
     }),
   ),
 });
@@ -67,8 +63,9 @@ const Social: React.FC<SocialProps> = ({ initialData, onUpdate }) => {
       const oldIndex = values.socialEntries.findIndex((entry: any) => entry.id === active.id);
       const newIndex = values.socialEntries.findIndex((entry: any) => entry.id === over.id);
 
-      const newItems = arrayMove(values.socialEntries, oldIndex, newIndex);
+      const newItems: any = arrayMove(values.socialEntries, oldIndex, newIndex);
       setFieldValue('socialEntries', newItems);
+      onUpdate({ social_links: newItems });
     }
   };
 
@@ -77,7 +74,7 @@ const Social: React.FC<SocialProps> = ({ initialData, onUpdate }) => {
       initialValues={{ socialEntries: initialData }}
       validationSchema={SocialSchema}
       onSubmit={(values) => {
-        onUpdate(values.socialEntries);
+        onUpdate({ social_links: values.socialEntries });
       }}
     >
       {({ values, setFieldValue }) => (
@@ -153,15 +150,21 @@ const Social: React.FC<SocialProps> = ({ initialData, onUpdate }) => {
                               <Box display="flex" flexDirection="column" gap={2}>
                                 <Box display="flex" gap={2}>
                                   <Box flex={1}>
-                                    <InputLabel>label</InputLabel>
+                                    <InputLabel>Label</InputLabel>
                                     <Field
                                       size="small"
                                       name={`socialEntries[${index}].label`}
                                       as={TextField}
-                                      placeholder="School"
+                                      placeholder="Label"
                                       variant="outlined"
                                       fullWidth
                                       sx={{ borderRadius: '8px' }}
+                                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setFieldValue(`socialEntries[${index}].label`, e.target.value);
+                                        const updatedEntries = [...values.socialEntries];
+                                        updatedEntries[index].label = e.target.value;
+                                        onUpdate({ social_links: updatedEntries });
+                                      }}
                                     />
                                   </Box>
                                   <Box flex={1}>
@@ -170,10 +173,16 @@ const Social: React.FC<SocialProps> = ({ initialData, onUpdate }) => {
                                       size="small"
                                       name={`socialEntries[${index}].link`}
                                       as={TextField}
-                                      placeholder="Degree"
+                                      placeholder="Link"
                                       variant="outlined"
                                       fullWidth
                                       sx={{ borderRadius: '8px' }}
+                                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setFieldValue(`socialEntries[${index}].link`, e.target.value);
+                                        const updatedEntries = [...values.socialEntries];
+                                        updatedEntries[index].link = e.target.value;
+                                        onUpdate({ social_links: updatedEntries });
+                                      }}
                                     />
                                   </Box>
                                 </Box>
@@ -185,6 +194,10 @@ const Social: React.FC<SocialProps> = ({ initialData, onUpdate }) => {
                             aria-label="delete"
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent toggling accordion
+                              const updatedEntries = [...values.socialEntries];
+                              updatedEntries.splice(index, 1);
+                              setFieldValue('socialEntries', updatedEntries);
+                              onUpdate({ social_links: updatedEntries });
                               remove(index); // Remove the entry
                             }}
                             sx={{ marginLeft: '8px', marginTop: '5px' }}
@@ -203,13 +216,17 @@ const Social: React.FC<SocialProps> = ({ initialData, onUpdate }) => {
                     }}
                   >
                     <Button
-                      onClick={() =>
-                        push({
+                      onClick={() => {
+                        const newItem = {
                           id: values.socialEntries.length + 1,
                           label: '',
                           link: '',
-                        })
-                      }
+                        };
+                        const updatedEntries = [...values.socialEntries, newItem];
+                        setFieldValue('socialEntries', updatedEntries);
+                        onUpdate({ social_links: updatedEntries });
+                        push(newItem);
+                      }}
                       color="primary"
                       sx={{
                         marginTop: '16px',

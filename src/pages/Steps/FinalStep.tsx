@@ -1,46 +1,44 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Stack, useMediaQuery, useTheme } from '@mui/material';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import EditorPanel from '@/components/Steps/EditorPanel';
 import PreviewPanel from '@/components/Steps/PreviewPanel';
 import MobilePreviewButton from '@/components/Steps/MobilePreviewButton';
 import SaveButton from '@/components/Steps/SaveButton';
 import { useUpdateCvMutation } from '@/features/cvGenerator/generateCv';
+import { useAppDispatch, useAppSelector } from '@/app/store';
+import { setCurrentCv, setUpdatedCv } from '@/features/CurrentCv/currentCvSlice';
 const FinalStep = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
-  const location = useLocation();
-
-  const [response, setResponse] = useState(location.state?.response);
-  if (!response) return <Navigate to="/" replace />;
+  const { currentCv, updatedCv } = useAppSelector((state) => state.currentCV);
+  console.log('currentCv', currentCv);
+  const dispatch = useAppDispatch();
+  const [response, setResponse] = useState(Object.keys(currentCv)?.length > 0 ? currentCv : updatedCv);
+  console.log('responsessssss', response);
+  if (Object.keys(response).length === 0) return <Navigate to="/" replace />;
 
   const decodedHtml = atob(response?.file_base64 ?? '');
 
   const [htmlPreviewVisible, setHtmlPreviewVisible] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  console.log('hasChanges', hasChanges);
   const [isSaving, setIsSaving] = useState(false);
   const [updatedCV, setupdatedCV] = useState({});
-  console.log('updatedCV', updatedCV);
   const [update, { isLoading, isError, originalArgs, isSuccess, data }] = useUpdateCvMutation();
 
-  console.log('isLoading,isError,originalArgs,isSuccess', isLoading, isError, originalArgs, isSuccess);
-
-  // Skills preparation
   const skillsData: any = response.technical_skills.map((skill: any, index: number) => ({
     id: index + 1,
     label: skill.name,
   }));
   const initialSelectedSkills = skillsData.map((skill: any) => skill.id);
 
-  // Handle user interactions
   const handlePreviewClick = () => {
     setHtmlPreviewVisible(!htmlPreviewVisible);
   };
 
   const handleSave = async () => {
     setIsSaving(true);
-    await update({ data: updatedCV, id: response.id });
+    await update({ data: { ...response, ...updatedCV, file_base64: undefined }, id: response.id });
     setHasChanges(false);
     setIsSaving(false);
   };
@@ -50,10 +48,13 @@ const FinalStep = () => {
     setHasChanges(true);
     console.log('setHasChanges', data);
     setupdatedCV((prevData) => ({ ...prevData, ...data }));
+    dispatch(setUpdatedCv({ ...updatedCV, ...data }));
   }, []);
 
   useEffect(() => {
     if (data) {
+      dispatch(setCurrentCv(data));
+      dispatch(setUpdatedCv(data));
       setResponse(data);
     }
   }, [data]);
@@ -67,7 +68,6 @@ const FinalStep = () => {
         backgroundColor: '#F5F6F8',
       }}
     >
-      {/* Left Editor Panel */}
       <EditorPanel
         response={response}
         isMobile={isMobile}
@@ -76,13 +76,14 @@ const FinalStep = () => {
         skillsData={skillsData}
       />
 
-      {/* Right-side Preview Panel (hidden on mobile by design; toggled with a button) */}
-      {!isMobile && <PreviewPanel decodedHtml={decodedHtml} />}
+      {isMobile && htmlPreviewVisible ? (
+        <PreviewPanel decodedHtml={decodedHtml} onClose={handlePreviewClick} visible={htmlPreviewVisible} />
+      ) : (
+        !isMobile && <PreviewPanel decodedHtml={decodedHtml} onClose={handlePreviewClick} visible={false} />
+      )}
 
-      {/* Preview Button for Mobile */}
       {isMobile && <MobilePreviewButton htmlPreviewVisible={htmlPreviewVisible} onPreviewClick={handlePreviewClick} />}
 
-      {/* Floating Save Button (only shows if there are changes) */}
       {hasChanges && <SaveButton isMobile={isMobile} isSaving={isSaving} onClick={handleSave} />}
     </Stack>
   );

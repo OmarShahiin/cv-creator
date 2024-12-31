@@ -5,6 +5,8 @@ import clipboard from '@/assets/clipboard.svg';
 import note from '@/assets/note-2.svg';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGenerateCVMutation } from '@/features/cvGenerator/generateCv';
+import { useAppDispatch } from '@/app/store';
+import { setCurrentCv } from '@/features/CurrentCv/currentCvSlice';
 interface StepProgressProps {
   step: number;
   totalSteps: number;
@@ -14,7 +16,7 @@ interface StepProgressProps {
 export const StepProgress: React.FC<StepProgressProps> = ({ step, totalSteps, title }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
+  const dispatch = useAppDispatch();
   const progressValue = (step / totalSteps) * 100;
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,7 +34,8 @@ export const StepProgress: React.FC<StepProgressProps> = ({ step, totalSteps, ti
       const res = await generateCV(body).unwrap();
       console.log('res', res);
       // const result = res.json();
-      navigate('/final-step', { state: { response: res } });
+      dispatch(setCurrentCv(res));
+      navigate('/final-step', { replace: true });
       // Executes the mutation and waits for the response
     } catch (err) {
       console.error('Error generating CV:', err);

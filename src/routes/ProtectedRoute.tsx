@@ -1,9 +1,9 @@
-import { useAuth } from '@/context/AuthContext';
+import { useAppSelector } from '@/app/store';
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
+  const { user } = useAppSelector((state) => state.user);
   console.log('user', user);
 
   // If user is not logged in, redirect to register (or login) page

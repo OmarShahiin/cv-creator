@@ -68,7 +68,10 @@ const EditorPanel: FC<EditorPanelProps> = ({ response, isMobile, handleChange, i
         />
         <AboutMe aboutMe={response.summary} onUpdate={handleChange} />
         {sections.work_experiences && (
-          <EmploymentHistory initialData={response.work_experiences} onUpdate={handleChange} />
+          <EmploymentHistory
+            initialData={response.work_experiences.map((exp: any, i: number) => ({ ...exp, id: i }))}
+            onUpdate={handleChange}
+          />
         )}
         {sections.social_links && (
           <Social

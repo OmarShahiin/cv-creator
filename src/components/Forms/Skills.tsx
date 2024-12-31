@@ -43,10 +43,10 @@ const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
   }, [initialSelectedSkills, selectedSkills]);
 
   useEffect(() => {
-    if (skillsChanged) {
+    if (skillsChanged && !isAddingSkill) {
       onUpdate?.({ technical_skills: selectedSkillObjects });
     }
-  }, [skillsChanged]);
+  }, [skillsChanged, isAddingSkill]);
 
   const toggleSkill = (id: number) => {
     setSelectedSkills((prev) => (prev.includes(id) ? prev.filter((skillId) => skillId !== id) : [...prev, id]));

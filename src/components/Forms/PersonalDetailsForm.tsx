@@ -115,11 +115,12 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                     onChange={(event) => {
                       const file = event.target.files?.[0];
                       if (file) {
+                        onUpdate({ photo: file });
+
                         let reader = new FileReader();
                         reader.readAsDataURL(file);
                         reader.onload = function () {
                           setFieldValue('photo', reader.result);
-                          onUpdate({ photo: reader.result });
                         };
                         reader.onerror = function (error) {
                           console.log('Error: ', error);

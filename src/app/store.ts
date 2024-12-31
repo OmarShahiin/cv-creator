@@ -5,7 +5,8 @@ import userReducer from '@/features/user/userSlice';
 import { counterReducer } from '@/features/counterSlice';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Use AsyncStorage for React Native
-import loadingReducer   from '@/features/loading/loadingSlice';
+import loadingReducer from '@/features/loading/loadingSlice';
+import { currentCvSlice } from '@/features/CurrentCv/currentCvSlice';
 
 // Configure persistence for reducers
 const persistConfig = {
@@ -14,13 +15,15 @@ const persistConfig = {
 };
 
 const persistedUserReducer = persistReducer(persistConfig, userReducer);
+const persistedCurrentCvReducer = persistReducer(persistConfig, currentCvSlice.reducer);
 
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     counter: counterReducer,
-    loading:loadingReducer,
+    loading: loadingReducer,
     user: persistedUserReducer, // Add persisted reducer
+    currentCV: persistedCurrentCvReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

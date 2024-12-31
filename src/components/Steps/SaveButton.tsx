@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Button } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description';
-
+import CachedIcon from '@mui/icons-material/Cached';
 interface SaveButtonProps {
   isMobile: boolean;
   isSaving: boolean;
@@ -15,8 +14,8 @@ const SaveButton: FC<SaveButtonProps> = ({ isMobile, isSaving, onClick }) => {
       color="primary"
       sx={{
         position: 'fixed',
-        bottom: isMobile ? 80 : 20,
-        right: 'calc(50% - 12px)',
+        bottom: isMobile ? 27 : 20, // Adjust the bottom position for mobile view
+        right: isMobile ? 10 : 'calc(50% - 28px)', // Align it to the right for mobile
         zIndex: 1000,
         textTransform: 'none',
         borderRadius: '50%',
@@ -35,7 +34,7 @@ const SaveButton: FC<SaveButtonProps> = ({ isMobile, isSaving, onClick }) => {
       onClick={onClick}
       disabled={isSaving}
     >
-      {isSaving ? '...' : <DescriptionIcon sx={{ color: 'white' }} />}
+      {isSaving ? '...' : <CachedIcon sx={{ color: 'white' }} />}
     </Button>
   );
 };

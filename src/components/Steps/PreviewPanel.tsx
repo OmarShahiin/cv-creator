@@ -1,14 +1,88 @@
 import { FC } from 'react';
-import { Stack, Box, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Stack, Box, IconButton, Button, useMediaQuery } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
+import { useNavigate } from 'react-router-dom';
+
 interface PreviewPanelProps {
   decodedHtml: string;
+  onClose: () => void; // Callback for closing the overlay
+  visible: boolean;
 }
 
-const PreviewPanel: FC<PreviewPanelProps> = ({ decodedHtml }) => {
+const PreviewPanel: FC<PreviewPanelProps> = ({ decodedHtml, onClose, visible }) => {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery('(max-width: 600px)'); // Check if the screen size is mobile
+  console.log('isMobile', isMobile);
 
+  if (isMobile && visible) {
+    // Mobile-specific overlay
+    return (
+      <Stack
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)', // Dark overlay
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000, // Ensure it overlays the entire screen
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+          }}
+        >
+          {/* Close Icon */}
+          <IconButton
+            onClick={onClose}
+            sx={{
+              color: '#FFF',
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {/* Download Button */}
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: '#0e41fc',
+            color: '#FFF',
+            fontSize: '16px',
+            ':hover': {
+              backgroundColor: '#0636c9',
+            },
+          }}
+          onClick={() => {
+            navigate('/create/payment');
+          }}
+        >
+          Download File
+        </Button>
+        <Box
+          sx={{
+            height: '551px',
+            width: '396px',
+            backgroundColor: '#ffffff',
+            overflow: 'scroll',
+            borderRadius: '8px',
+          }}
+          dangerouslySetInnerHTML={{ __html: decodedHtml }}
+        />
+      </Stack>
+    );
+  }
+
+  // Default Web View
   return (
     <Stack
       flex={1}

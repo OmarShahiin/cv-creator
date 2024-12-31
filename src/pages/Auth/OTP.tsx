@@ -83,6 +83,7 @@ export const OTP = () => {
         setCredentials({
           accessToken: dataRes.access,
           refreshToken: dataRes.refresh,
+          user: dataRes,
         }),
       );
       login({
@@ -132,7 +133,13 @@ export const OTP = () => {
               <Link href="#" style={{ color: '#0e41fb' }}>
                 {email}{' '}
               </Link>
-              <Link href="#" style={{ color: '#828291', textDecoration: 'underline' }}>
+              <Link
+                style={{ color: '#828291', textDecoration: 'underline' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/register');
+                }}
+              >
                 Change?
               </Link>
             </Typography>

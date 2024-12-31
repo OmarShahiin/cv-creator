@@ -34,7 +34,7 @@ interface EmploymentEntry {
 
 interface EmploymentHistoryProps {
   initialData: EmploymentEntry[];
-  onUpdate: (updatedData: EmploymentEntry[]) => void;
+  onUpdate: (updatedData: { work_experiences: EmploymentEntry[] }) => void;
 }
 
 const EmploymentSchema = Yup.object().shape({
@@ -51,6 +51,7 @@ const EmploymentSchema = Yup.object().shape({
 });
 
 const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUpdate }) => {
+  console.log('initialData', initialData);
   const [expanded, setExpanded] = useState<number | false>(false);
 
   const sensors = useSensors(
@@ -74,8 +75,9 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
       const oldIndex = values.employmentEntries.findIndex((entry: any) => entry.id === active.id);
       const newIndex = values.employmentEntries.findIndex((entry: any) => entry.id === over.id);
 
-      const newItems = arrayMove(values.employmentEntries, oldIndex, newIndex);
+      const newItems: any = arrayMove(values.employmentEntries, oldIndex, newIndex);
       setFieldValue('employmentEntries', newItems);
+      onUpdate({ work_experiences: newItems });
     }
   };
 
@@ -84,7 +86,8 @@ const EmploymentHistory: React.FC<EmploymentHistoryProps> = ({ initialData, onUp
       initialValues={{ employmentEntries: initialData }}
       validationSchema={EmploymentSchema}
       onSubmit={(values) => {
-        onUpdate(values.employmentEntries);
+        console.log('values', values);
+        // onUpdate(values.employmentEntries);
       }}
     >
       {({ values, setFieldValue }) => (

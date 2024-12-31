@@ -55,6 +55,9 @@ const Header = () => {
 
   useEffect(() => {
     document.documentElement.setAttribute('dir', language === 'en' ? 'ltr' : 'rtl');
+    if (decodedToken && isExpired) {
+      dispatch(logout());
+    }
   }, [language]);
 
   // Handle logout
