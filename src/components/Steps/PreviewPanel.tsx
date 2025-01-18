@@ -2,7 +2,9 @@ import { FC } from 'react';
 import { Stack, Box, IconButton, Button, useMediaQuery } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/app/store';
+import { useCheckoutCvMutation } from '@/features/cvGenerator/generateCv';
 
 interface PreviewPanelProps {
   decodedHtml: string;
@@ -14,7 +16,19 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ decodedHtml, onClose, visible }) 
   const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width: 600px)'); // Check if the screen size is mobile
   console.log('isMobile', isMobile);
-
+  const { currentCv } = useAppSelector((state) => state.currentCV);
+  const [goToPayment] = useCheckoutCvMutation();
+  const handleDonwload = () => {
+    goToPayment({ id: 'test' })
+      .unwrap()
+      .then((response: any) => {
+        console.log('response', response);
+        if (response?.checkout_url) {
+          window.location.href = response.checkout_url;
+          // redirect(response.checkout_url);
+        }
+      });
+  };
   if (isMobile && visible) {
     // Mobile-specific overlay
     return (
@@ -62,9 +76,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ decodedHtml, onClose, visible }) 
               backgroundColor: '#0636c9',
             },
           }}
-          onClick={() => {
-            navigate('/create/payment');
-          }}
+          onClick={handleDonwload}
         >
           Download File
         </Button>
@@ -139,9 +151,7 @@ const PreviewPanel: FC<PreviewPanelProps> = ({ decodedHtml, onClose, visible }) 
             },
           }}
           variant="contained"
-          onClick={() => {
-            navigate('/create/payment');
-          }}
+          onClick={handleDonwload}
         >
           download
         </Button>

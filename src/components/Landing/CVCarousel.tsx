@@ -6,6 +6,7 @@ import CenteredSwiper from './Swiper';
 import certifaied from '@/assets/certified.svg';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/app/store';
 
 const CVCarousel = () => {
   const { t } = useTranslation(); // Use translation hook
@@ -13,7 +14,7 @@ const CVCarousel = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigation = useNavigate();
-  const user = localStorage.getItem('user') || null;
+  const { accessToken } = useAppSelector((state) => state.userData);
 
   return (
     <Box
@@ -97,7 +98,7 @@ const CVCarousel = () => {
         </IconButton>
         <Button
           onClick={() => {
-            !user ? navigation('/register') : navigation('/home');
+            !accessToken ? navigation('/register') : navigation('/home');
           }}
           variant="contained"
           color="primary"

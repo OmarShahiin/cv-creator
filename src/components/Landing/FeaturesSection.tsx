@@ -77,7 +77,7 @@ const FeaturesSection = () => {
           paddingInline={1}
         >
           {features.map((item, index) => (
-            <Grid2 key={index} size={isMobile ? 6 : 3}>
+            <Grid2 key={index} size={{ xs: 6, sm: 6, md: 3 }}>
               <Card
                 sx={{
                   borderRadius: 2,
@@ -91,6 +91,7 @@ const FeaturesSection = () => {
                   paddingInline: isMobile ? '12px' : '24px',
                   paddingBlock: isMobile ? '0px' : '24px',
                   paddingTop: isMobile ? '12px' : '24px',
+                  height: '100%',
                 }}
               >
                 <Box

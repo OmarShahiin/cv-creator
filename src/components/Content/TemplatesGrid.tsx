@@ -29,7 +29,7 @@ export function TemplatesGrid({
           <Card
             onClick={() => onCardClick(template.id)}
             sx={{
-              minWidth: isMobile ? '160px' : '272px',
+              minWidth: isMobile ? '160px' : '',
               height: isMobile ? '254px' : '479px',
               display: 'flex',
               flexDirection: 'column',

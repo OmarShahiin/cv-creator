@@ -3,8 +3,17 @@ import linkedin from '@/assets/linkedin.svg';
 import { useTranslation } from 'react-i18next';
 import { GoogleLogin } from '@react-oauth/google';
 import { useLinkedIn } from 'react-linkedin-login-oauth2';
+import { useVerifyGoogleTokenMutation } from '@/features/user/authApiSlice';
+import { useEffect } from 'react';
+import { setCredentials } from '@/features/user/userSlice';
+import { useAppDispatch } from '@/app/store';
+import { useAuth } from '@/context/AuthContext';
 
 export const SocialLoginButtons = () => {
+  const [verifyGoogleToken, { isSuccess, data }] = useVerifyGoogleTokenMutation();
+  const dispatch = useAppDispatch();
+  const { login } = useAuth();
+
   const { t } = useTranslation();
   const buttonStyles = {
     display: 'flex',
@@ -21,6 +30,27 @@ export const SocialLoginButtons = () => {
 
   const handleGoogleSuccess = (response: any) => {
     console.log('Google Login Success:', response);
+    try {
+      const code = response.credential;
+      verifyGoogleToken({ code })
+        .unwrap()
+        .then((dataRes: any) => {
+          console.log('data', data);
+          dispatch(
+            setCredentials({
+              accessToken: dataRes.access_token,
+              refreshToken: dataRes.refresh_token,
+              user: dataRes,
+            }),
+          );
+          login({
+            accessToken: dataRes.access,
+            refreshToken: dataRes.refresh,
+          });
+        });
+    } catch (error) {
+      console.error('Error verifying Google token:', error);
+    }
   };
 
   const handleGoogleError = () => {

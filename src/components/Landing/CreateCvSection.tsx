@@ -3,13 +3,14 @@ import imageBG from '@/assets/images/imageCreateCV.png'; // Update the path to y
 import cvs from '@/assets/📄 Mockup.svg'; // Update the path to your image
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/app/store';
 
 const CreateCvSection = () => {
   const { t } = useTranslation(); // Use translation hook
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigation = useNavigate();
-  const user = localStorage.getItem('user') || null;
+  const { accessToken } = useAppSelector((state) => state.userData);
   return (
     <Box
       sx={{
@@ -75,7 +76,7 @@ const CreateCvSection = () => {
 
           <Button
             onClick={() => {
-              !user ? navigation('/register') : navigation('/home');
+              !accessToken ? navigation('/register') : navigation('/home');
             }}
             variant="contained"
             sx={{

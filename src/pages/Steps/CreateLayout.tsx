@@ -1,10 +1,19 @@
+import { useAppSelector } from '@/app/store';
 import Header from '@/components/Landing/Header';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { Outlet } from 'react-router-dom';
+import { Box } from '@mui/material';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const CreateLayout = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { accessToken } = useAppSelector((state) => state.userData);
+  console.log('accessToken', accessToken);
+  const user = localStorage.getItem('user') || null;
+  console.log('user', user);
+  console.log('user', user);
+
+  // If user is not logged in, redirect to register (or login) page
+  if (!user || !accessToken) {
+    return <Navigate to="/register" replace />;
+  }
   return (
     <Box
       sx={{
@@ -13,28 +22,14 @@ const CreateLayout = () => {
         flexDirection: 'column',
         alignItems: 'center',
         display: 'flex',
+        backgroundColor: '#F5F6F8',
       }}
     >
-      <Box sx={{ maxWidth: 'lg', width: '100%' }}>
-        <Header />
+      <Box sx={{ width: '100%' }}>
+        <Header bgColor="#fff" />
       </Box>
-      <Box
-        sx={{
-          backgroundColor: '#F5F6F8',
-          width: '100%',
-          // justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center',
-          display: 'flex',
-          flex: 1,
-          minHeight: '92vh',
-          justifyContent: isMobile ? 'flex-start' : 'center',
-          paddingTop: isMobile ? '66px' : '0px',
-          paddingInline: '5px',
-        }}
-      >
-        <Outlet />
-      </Box>
+
+      <Outlet />
     </Box>
   );
 };

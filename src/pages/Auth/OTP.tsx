@@ -79,16 +79,17 @@ export const OTP = () => {
 
     try {
       const dataRes: any = await validateOtp({ email, otp: otp.toString().replace(/,/g, '') }).unwrap();
+      console.log('dataRes', dataRes);
       dispatch(
         setCredentials({
-          accessToken: dataRes.access,
-          refreshToken: dataRes.refresh,
+          accessToken: dataRes.access_token,
+          refreshToken: dataRes.refresh_token,
           user: dataRes,
         }),
       );
       login({
-        accessToken: dataRes.access,
-        refreshToken: dataRes.refresh,
+        accessToken: dataRes.access_token,
+        refreshToken: dataRes.refresh_token,
       });
       navigate('/home'); // Navigate to the home screen or desired destination
     } catch (error) {

@@ -1,35 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-const initialState = {
-  accessToken: null,
-  refreshToken: null,
-  user: null,
-  mode: localStorage.getItem('mode')
-    ? localStorage.getItem('mode')
-    : window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'light'
-    : 'light',
+interface UserState {
+  accessToken: string;
+  refreshToken: string;
+  user: any;
+  language: string;
+}
+const initialState: UserState = {
+  accessToken: '',
+  refreshToken: '',
+  user: '',
   language: localStorage.getItem('language') || 'en', // Default to 'en' if no language is set
 };
 
 export const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: { ...initialState, omar: 'asas' },
   reducers: {
     setCredentials: (state, action) => {
-      console.log('action', action);
       state.refreshToken = action.payload.refreshToken;
       state.accessToken = action.payload.accessToken;
-      state.user = action.payload.user;
-    },
-
-    changeMode: (state) => {
-      if (state.mode === 'light') {
-        state.mode = 'dark';
-        localStorage.setItem('mode', 'dark');
-      } else {
-        state.mode = 'light';
-        localStorage.setItem('mode', 'light');
+      if (action.payload.user) {
+        state.user = action.payload;
       }
     },
     setLanguage: (state, action) => {
@@ -38,13 +29,12 @@ export const userSlice = createSlice({
     },
     logout: (state) => {
       localStorage.removeItem('user');
-      state.accessToken = null;
-      state.refreshToken = null;
+      state.accessToken = '';
+      state.refreshToken = '';
       state.user = null;
     },
   },
 });
 
-export const { setCredentials, changeMode, setLanguage, logout } = userSlice.actions;
-
-export default userSlice.reducer;
+export const { setCredentials, setLanguage, logout } = userSlice.actions;
+export const userReducer = userSlice.reducer;

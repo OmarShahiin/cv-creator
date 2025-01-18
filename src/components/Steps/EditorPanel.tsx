@@ -30,7 +30,6 @@ const EditorPanel: FC<EditorPanelProps> = ({ response, isMobile, handleChange, i
       ...prevSections,
       [selectedSection]: true, // Update the selected section to true
     }));
-    console.log('Selected Section:', selectedSection);
   };
 
   return (

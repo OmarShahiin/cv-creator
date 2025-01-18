@@ -12,6 +12,10 @@ const FinalStep = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(1024));
   const { currentCv, updatedCv } = useAppSelector((state) => state.currentCV);
+  const { user: stateUser } = useAppSelector((state) => state.userData);
+  const user = localStorage.getItem('user') || null;
+  console.log('user', user);
+
   console.log('currentCv', currentCv);
   const dispatch = useAppDispatch();
   const [response, setResponse] = useState(Object.keys(currentCv)?.length > 0 ? currentCv : updatedCv);
@@ -44,9 +48,7 @@ const FinalStep = () => {
   };
 
   const handleChange = useCallback((data: any) => {
-    console.log('data', data);
     setHasChanges(true);
-    console.log('setHasChanges', data);
     setupdatedCV((prevData) => ({ ...prevData, ...data }));
     dispatch(setUpdatedCv({ ...updatedCV, ...data }));
   }, []);
@@ -59,6 +61,10 @@ const FinalStep = () => {
     }
   }, [data]);
 
+  // If user is not logged in, redirect to register (or login) page
+  if (!user || !stateUser) {
+    return <Navigate to="/register" replace />;
+  }
   return (
     <Stack
       direction={isMobile ? 'column' : 'row'}

@@ -23,7 +23,7 @@ export const Rigister = () => {
         overflowX: 'hidden',
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: isMobile ? 'flex-start' : 'space-between',
+        justifyContent: { md: 'center', xs: 'center', lg: 'space-between' },
         height: '100vh',
       }}
     >
@@ -31,10 +31,11 @@ export const Rigister = () => {
         sx={{
           flex: 1,
           paddingBlock: isMobilexs ? '20px' : '60px',
-          marginInlineStart: isMobilexs ? '0px' : isMobile ? '30px' : '90px',
+          marginInlineStart: { sm: '30px', md: 0, lg: '90px' },
           paddingInline: isMobilexs ? '5px' : 'unset',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: { xs: 'center', md: 'center', lg: 'flex-start' },
         }}
       >
         <Box
@@ -65,15 +66,27 @@ export const Rigister = () => {
       {isMobile ? undefined : (
         <Box
           sx={{
-            flex: 1,
-            display: 'flex',
+            // flex: 1,
+            display: { lg: 'flex', xs: 'none', md: 'none' },
+
             flexDirection: 'column',
             alignItems: 'center',
-            paddingInline: '40px',
+            // paddingInline: '40px',
             paddingBlock: isMobilexs ? '20px' : '60px',
           }}
         >
-          <Box component={'img'} src={side} />
+          <Box
+            component={'img'}
+            src={side}
+            sx={{
+              // flex: 1.5,
+              width: { md: '60%', lg: '90%', xl: '100%' },
+              // bgcolor: 'red',
+              // height: '100%',
+              // aspectRatio: '16/9',
+              // objectFit: 'cover',
+            }}
+          />
         </Box>
       )}
     </Box>

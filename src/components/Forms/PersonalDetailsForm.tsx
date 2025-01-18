@@ -148,7 +148,14 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                 >
                   Email
                 </InputLabel>
-                <Field size="small" component={TextField} name="email" placeholder="Email" fullWidth />
+                <Field
+                  size="small"
+                  component={TextField}
+                  name="email"
+                  placeholder="Email"
+                  fullWidth
+                  onChange={(e: any) => handleChangeAndUpdate(e, setFieldValue)}
+                />
               </Grid>
               <Grid
                 size={{
@@ -167,7 +174,14 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                 >
                   Phone
                 </InputLabel>
-                <Field size="small" component={TextField} name="phone" placeholder="Phone" fullWidth />
+                <Field
+                  size="small"
+                  component={TextField}
+                  name="phone"
+                  placeholder="Phone"
+                  fullWidth
+                  onChange={(e: any) => handleChangeAndUpdate(e, setFieldValue)}
+                />
               </Grid>
               <Grid
                 size={{
@@ -186,7 +200,14 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                 >
                   Country
                 </InputLabel>
-                <Field size="small" component={TextField} name="country" placeholder="Country" fullWidth />
+                <Field
+                  size="small"
+                  component={TextField}
+                  name="country"
+                  placeholder="Country"
+                  fullWidth
+                  onChange={(e: any) => handleChangeAndUpdate(e, setFieldValue)}
+                />
               </Grid>
               <Grid
                 size={{
@@ -205,7 +226,14 @@ const PersonalDetailsForm: React.FC<PersonalDetailsFormProps> = ({ initialData, 
                 >
                   City
                 </InputLabel>
-                <Field size="small" component={TextField} name="city" placeholder="City" fullWidth />
+                <Field
+                  size="small"
+                  component={TextField}
+                  name="city"
+                  placeholder="City"
+                  fullWidth
+                  onChange={(e: any) => handleChangeAndUpdate(e, setFieldValue)}
+                />
               </Grid>
             </Grid>
           </Form>

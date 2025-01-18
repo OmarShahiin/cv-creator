@@ -2,19 +2,19 @@ import { Box, Typography, Button, Stack, useTheme, useMediaQuery } from '@mui/ma
 import Star from '@/assets/star.svg';
 import image1 from '@/assets/images/image1.png';
 import image2 from '@/assets/images/image2.png';
-import image3 from '@/assets/images/image3.png';
+import image3 from '@/assets/titleBg.png';
 import correctSign from '@/assets/images/correctSign.svg';
 import Header from './Header';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '@/app/store';
 const TitleSection = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { t } = useTranslation();
   const navigation = useNavigate();
-  const user = localStorage.getItem('user') || null;
-
+  const { accessToken } = useAppSelector((state) => state.userData);
   return (
     <Box
       sx={{
@@ -40,7 +40,7 @@ const TitleSection = () => {
           borderRadius: '28px',
           backgroundColor: '#fff',
           width: '100%',
-          height: '783px',
+          // height: '783px',
           flexDirection: 'column',
           alignItems: 'center',
         }}
@@ -55,7 +55,7 @@ const TitleSection = () => {
             filter: 'blur(409.9px)',
             borderRadius: '50%',
             backgroundColor: 'rgba(14, 123, 252, 0.36)',
-            width: '1017px',
+            // width: '1017px',
             height: '1017px',
             // zIndex: 1,
           }}
@@ -107,7 +107,7 @@ const TitleSection = () => {
         {/* Button */}
         <Button
           onClick={() => {
-            !user ? navigation('/register') : navigation('/home');
+            !accessToken ? navigation('/register') : navigation('/home');
           }}
           sx={{
             // position: 'absolute',
@@ -129,122 +129,13 @@ const TitleSection = () => {
         >
           {t('createResumeButton')}
         </Button>
-
-        <Box sx={{}}>
-          <Box
-            component="img"
-            src={image2}
-            alt=""
-            sx={{
-              position: 'absolute',
-              top: '491px',
-              left: isMobile ? '-100px' : '439px',
-              borderRadius: '16px',
-              width: isMobile ? '260px' : '378px',
-              height: isMobile ? '362px' : '527px',
-              objectFit: 'cover',
-              // zIndex: 9,
-            }}
-          />
-          <Box
-            component="img"
-            src={image1}
-            alt=""
-            sx={{
-              position: 'absolute',
-              top: '491px',
-              left: isMobile ? '250px' : '982px',
-              width: isMobile ? '260px' : '378px',
-              height: isMobile ? '362px' : '527px',
-              borderRadius: '16px',
-              objectFit: 'cover',
-            }}
-          />
-          <Box
-            sx={{
-              // position: 'relative',
-              position: 'absolute',
-              top: isMobile ? '400px' : '364px',
-              left: isMobile ? '50px' : '688px',
-              width: isMobile ? '291px' : '423px',
-              height: isMobile ? '406px' : '591px',
-              objectFit: 'cover',
-            }}
-          >
-            <Box
-              component="img"
-              src={image3}
-              alt=""
-              sx={{
-                position: 'absolute',
-                // top: '364px',
-                left: '-10px',
-                width: isMobile ? '291px' : '423px',
-                height: isMobile ? '406px' : '591px',
-                borderRadius: '16px',
-              }}
-            />
-            <Box
-              component="img"
-              src={correctSign}
-              alt=""
-              sx={{
-                position: 'absolute',
-                top: '-18px',
-                right: '-10px',
-                borderRadius: '16px',
-                // width: '423px',
-                // height: '591px',
-                objectFit: 'cover',
-              }}
-            />
-          </Box>
-        </Box>
-        {/* Rating Component */}
         <Box
+          component={'img'}
+          src={image3}
           sx={{
-            position: 'absolute',
-            top: '646px',
-            left: '324px',
-            width: '212.2px',
-            height: '58.6px',
+            width: { xs: '200%', md: '90%', lg: '80%', xl: '100%', xxl: '100%', sm: '100%' },
           }}
-        >
-          {!isMobile && (
-            <>
-              <Box
-                sx={{
-                  boxShadow: '0px 4.041px 62.54px rgba(0, 0, 0, 0.15)',
-                  borderRadius: '48px',
-                  backgroundColor: '#fff',
-                  width: '100%',
-                  height: '100%',
-                  // paddingInline: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Stack
-                  direction="row"
-                  sx={{
-                    // position: 'absolute',
-                    // top: '16.16px',
-                    // left: '21.22px',
-                    columnGap: '5px',
-                  }}
-                >
-                  {/* Star icons */}
-                  {Array(5)
-                    .fill(0)
-                    .map((_, idx) => (
-                      <Box component="img" key={idx} src={Star} alt="Star" />
-                    ))}
-                </Stack>
-              </Box>
-            </>
-          )}
-        </Box>
+        />
       </Box>
     </Box>
   );

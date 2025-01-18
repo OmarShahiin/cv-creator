@@ -42,27 +42,7 @@ function Templates() {
 
   return (
     <>
-      <Box
-        sx={{
-          position: 'fixed',
-          top: '0px',
-          width: '100%',
-          backgroundColor: '#FFF',
-          display: 'flex',
-          justifyContent: 'center',
-          zIndex: 100,
-        }}
-      >
-        <Box width={'100%'} maxWidth={'lg'}>
-          <Header />
-        </Box>
-      </Box>
-      <Container
-        maxWidth="lg"
-        sx={{
-          paddingTop: '100px',
-        }}
-      >
+      <Container maxWidth="lg" sx={{}}>
         <Box
           textAlign="center"
           mt={4}

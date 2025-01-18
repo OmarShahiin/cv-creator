@@ -9,7 +9,7 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const res = getState() as RootState;
     console.log('res', res);
-    const token = (getState() as RootState).user.accessToken;
+    const token = (getState() as RootState).userData.accessToken;
 
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
@@ -28,7 +28,7 @@ const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, 
         {
           url: '/api/auth/token/refresh/',
           method: 'POST',
-          body: { refresh: (api.getState() as RootState).user.refreshToken },
+          body: { refresh: (api.getState() as RootState).userData.refreshToken },
         },
         api,
         extraOptions,
@@ -59,11 +59,17 @@ const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, 
         toast.error('Session expired. Please log in again.');
       }
     } else {
-      const strings: any = result.error?.data?.details.reduce(
-        (accumulator: string, currentValue: string) => accumulator + currentValue,
-        '',
-      );
-      toast.error(strings);
+      console.log('result', result);
+      if (result.error?.data?.error) {
+        console.log('result.error?.data?.details', result.error?.data?.error);
+        toast.error(result.error?.data?.error);
+      } else {
+        const strings: any = result.error?.data?.details?.reduce(
+          (accumulator: string, currentValue: string) => accumulator + currentValue,
+          '',
+        );
+        toast.error(strings);
+      }
     }
   }
 

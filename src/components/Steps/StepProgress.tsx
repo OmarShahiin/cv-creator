@@ -37,9 +37,10 @@ export const StepProgress: React.FC<StepProgressProps> = ({ step, totalSteps, ti
       dispatch(setCurrentCv(res));
       navigate('/final-step', { replace: true });
       // Executes the mutation and waits for the response
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error generating CV:', err);
       // window.location.reload(); // Reload the page on failure
+      navigate('/home', { replace: true });
     }
   };
   useEffect(() => {

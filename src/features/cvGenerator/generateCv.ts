@@ -24,8 +24,20 @@ const updateCvSlice = apiSlice.injectEndpoints({
         body: body.data,
       }),
     }),
+    checkoutCv: builder.mutation<void, { id: string }>({
+      query: (body) => ({
+        url: `/api/paymob/payment/?code=${body.id}`,
+        method: 'POST',
+      }),
+    }),
+    downloadResume: builder.mutation<void, { id: string }>({
+      query: (body) => ({
+        url: `/api/resume-builder/download/hmac=${body.id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
 // Export hooks for the two mutations
-export const { useUpdateCvMutation } = updateCvSlice;
+export const { useUpdateCvMutation, useCheckoutCvMutation, useDownloadResumeMutation } = updateCvSlice;

@@ -25,28 +25,28 @@ const MultiSelectTags: React.FC<MultiSelectTagsProps> = ({
   const [newSkillLabel, setNewSkillLabel] = useState('');
 
   // Memoized selected skill objects
-  const selectedSkillObjects = useMemo(() => {
+  const selectedSkillObjects = () => {
     return selectedSkills
       .map((id) => {
         const skill = allSkills.find((skill) => skill.id === id);
         return skill ? { name: skill.label } : null;
       })
       .filter((skill) => skill !== null) as { name: string }[];
-  }, [selectedSkills, allSkills]);
+  };
 
   // Detect if skills have changed
-  const skillsChanged = useMemo(() => {
+  const skillsChanged = () => {
     return (
       initialSelectedSkills.length !== selectedSkills.length ||
       !initialSelectedSkills.every((id) => selectedSkills.includes(id))
     );
-  }, [initialSelectedSkills, selectedSkills]);
+  };
 
   useEffect(() => {
-    if (skillsChanged && !isAddingSkill) {
-      onUpdate?.({ technical_skills: selectedSkillObjects });
+    if (skillsChanged() && !isAddingSkill) {
+      onUpdate?.({ technical_skills: selectedSkillObjects() });
     }
-  }, [skillsChanged, isAddingSkill]);
+  }, [selectedSkills, isAddingSkill]);
 
   const toggleSkill = (id: number) => {
     setSelectedSkills((prev) => (prev.includes(id) ? prev.filter((skillId) => skillId !== id) : [...prev, id]));

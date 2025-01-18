@@ -10,64 +10,32 @@ import Loading from '@/pages/Steps/Loading';
 import FinalStep from '@/pages/Steps/FinalStep';
 import { LinkedInCallback } from 'react-linkedin-login-oauth2';
 import Payment from '@/pages/Steps/Payment';
-import ProtectedRoute from './ProtectedRoute';
 import PublicOnlyRoute from './PublicOnlyRoute';
+import Success from '@/pages/Success/Success';
 
 const Routing = () => {
   return (
     <Routes>
       {/* Public routes */}
       <Route path="*" element={<Landing />} />
-      <Route
-        path="/register"
-        element={
-          <PublicOnlyRoute>
-            <Register />
-          </PublicOnlyRoute>
-        }
-      />
-      <Route
-        path="/OTP"
-        element={
-          <PublicOnlyRoute>
-            <OTP />
-          </PublicOnlyRoute>
-        }
-      />
+      <Route element={<PublicOnlyRoute />}>
+        <Route path="/register" element={<Register />} />
+        <Route path="/OTP" element={<OTP />} />
+      </Route>
+
       <Route path="/linkedin" element={<LinkedInCallback />} />
 
       {/* Protected routes */}
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <Templates />
-          </ProtectedRoute>
-        }
-      />
 
-      <Route
-        path="/create"
-        element={
-          <ProtectedRoute>
-            <CreateLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<JobDescriptionForm />} />
-        <Route path="Loading" element={<Loading />} />
-        <Route path="Name" element={<NameForm />} />
-        <Route path="payment" element={<Payment />} />
+      <Route element={<CreateLayout />}>
+        <Route path="/home" element={<Templates />} />
+        <Route path="/create" element={<JobDescriptionForm />} />
+        <Route path="/name" element={<NameForm />} />
+        <Route path="/Loading" element={<Loading />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/success" element={<Success />} />
       </Route>
-
-      <Route
-        path="/final-step"
-        element={
-          <ProtectedRoute>
-            <FinalStep />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/final-step" element={<FinalStep />} />
     </Routes>
   );
 };

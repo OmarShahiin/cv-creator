@@ -17,8 +17,9 @@ const CustomizeCvSection = () => {
         flexDirection: 'row',
         maxWidth: '1400px',
         marginTop: isMobile ? '' : '80px',
-        justifyContent: 'space-between',
+        justifyContent: { lg: 'space-between', xs: 'center', md: 'center' },
         paddingBottom: isMobile ? '70px' : '200px',
+        alignItems: 'center',
         width: '100%',
         paddingInline: isMobile ? '17px' : '',
       }}
@@ -26,11 +27,14 @@ const CustomizeCvSection = () => {
       <Box
         sx={{
           width: '100%',
-          height: '587px',
-          textAlign: 'left',
+          // textAlign: 'left',
           fontFamily: 'Poppins',
           fontSize: '38px',
           color: '#2b2a44',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         {/* Title */}
@@ -42,8 +46,7 @@ const CustomizeCvSection = () => {
             fontSize: isMobile ? '25px' : '38px',
             marginBottom: '38px',
             fontFamily: 'Poppins',
-            textAlign:"start"
-
+            textAlign: { sm: 'center', lg: 'start' },
           }}
         >
           {t('customizeCV.title')}
@@ -55,10 +58,10 @@ const CustomizeCvSection = () => {
             fontSize: isMobile ? '14px' : '18px',
             lineHeight: '146%',
             color: '#838291',
-            maxWidth: '626px',
+            maxWidth: { md: '90%', lg: '626px' },
             marginBottom: '40px',
             fontWeight: '400',
-            textAlign:"start"
+            textAlign: { sm: 'center', lg: 'start' },
           }}
         >
           {t('customizeCV.subtitle')}
@@ -69,7 +72,7 @@ const CustomizeCvSection = () => {
           sx={{
             borderRadius: '16px',
             backgroundColor: '#fff',
-            maxWidth: '631px',
+            maxWidth: { md: '90%', xs: '90%', lg: '626px' },
             padding: '28px',
             display: 'flex',
             flexDirection: 'column',
@@ -159,9 +162,18 @@ const CustomizeCvSection = () => {
           src={sideImage}
           alt=""
           sx={{
-            left: '679px',
+            width: { xs: 0, sm: '0%', md: '0%', lg: '50%' }, // Width is based on 60% of viewport width
+            height: 'calc(50vw * (587 / 524))', // Height calculated based on aspect ratio (height/width)
+            maxHeight: '587px',
             maxWidth: '524px',
-            height: '587px',
+            backgroundColor: 'blue',
+            display: {
+              xs: 'none',
+              md: 'none',
+              lg: 'block',
+              xl: 'block',
+              '2xl': 'block',
+            },
           }}
         />
       )}
